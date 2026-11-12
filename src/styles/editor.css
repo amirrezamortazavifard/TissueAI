@@ -1,0 +1,414 @@
+/* editor.css - Photoshop-grade Medical Image Editor Design System */
+
+:root {
+  /* Editor specific variables */
+  --ed-bg-color: #05070c;
+  --ed-glass-bg: rgba(14, 18, 28, 0.75);
+  --ed-glass-border: rgba(255, 255, 255, 0.12);
+  --ed-glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+  --ed-text-primary: rgba(255, 255, 255, 0.95);
+  --ed-text-secondary: rgba(255, 255, 255, 0.6);
+  --ed-accent: #c084fc;
+  --ed-accent-glow: rgba(192, 132, 252, 0.4);
+  --ed-btn-bg: rgba(255, 255, 255, 0.05);
+  --ed-btn-hover: rgba(255, 255, 255, 0.12);
+  --ed-btn-active: rgba(192, 132, 252, 0.2);
+  --ed-neumorph-shadow-out: 2px 2px 6px rgba(0, 0, 0, 0.6), -1px -1px 3px rgba(255, 255, 255, 0.04);
+  --ed-neumorph-shadow-in: inset 2px 2px 5px rgba(0, 0, 0, 0.7), inset -1px -1px 3px rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="light"] {
+  --ed-bg-color: #F8F9FA;
+  --ed-glass-bg: rgba(255, 255, 255, 0.85);
+  --ed-glass-border: rgba(0, 0, 0, 0.08);
+  --ed-glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+  --ed-text-primary: rgba(10, 15, 25, 0.9);
+  --ed-text-secondary: rgba(10, 15, 25, 0.6);
+  --ed-accent: #8b5cf6;
+  --ed-accent-glow: rgba(139, 92, 246, 0.3);
+  --ed-btn-bg: rgba(0, 0, 0, 0.04);
+  --ed-btn-hover: rgba(0, 0, 0, 0.08);
+  --ed-btn-active: rgba(139, 92, 246, 0.15);
+  --ed-neumorph-shadow-out: 2px 2px 5px rgba(0, 0, 0, 0.05), -2px -2px 5px rgba(255, 255, 255, 0.8);
+  --ed-neumorph-shadow-in: inset 2px 2px 4px rgba(0, 0, 0, 0.05), inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.ed-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: var(--ed-bg-color);
+  color: var(--ed-text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Aurora Canvas Background */
+.ed-canvas-wrapper {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--ed-bg-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ed-aurora-bg {
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+  filter: blur(70px);
+  animation: edAurora 20s ease-in-out infinite alternate;
+}
+
+@keyframes edAurora {
+  0% { transform: scale(1) rotate(0deg); }
+  100% { transform: scale(1.1) rotate(5deg); }
+}
+
+.ed-canvas-checker {
+  background-image: 
+    linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%), 
+    linear-gradient(-45deg, rgba(255,255,255,0.03) 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.03) 75%), 
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.03) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  border: 1px solid var(--ed-glass-border);
+  box-shadow: var(--ed-glass-shadow);
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="light"] .ed-canvas-checker {
+  background-image: 
+    linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%), 
+    linear-gradient(-45deg, rgba(0,0,0,0.05) 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.05) 75%), 
+    linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.05) 75%);
+}
+
+/* Glassmorphic Panels */
+.ed-glass-panel {
+  background: var(--ed-glass-bg);
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+  border: 1px solid var(--ed-glass-border);
+  border-radius: 14px;
+  box-shadow: var(--ed-glass-shadow);
+  z-index: 10;
+}
+
+/* Top Menu Bar */
+.ed-topbar {
+  height: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  background: var(--ed-glass-bg);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--ed-glass-border);
+  z-index: 50;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* Context Options Bar */
+.ed-contextbar {
+  height: 42px;
+  min-height: 42px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+  background: rgba(10, 14, 22, 0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--ed-glass-border);
+  box-shadow: inset 0 -1px 0 rgba(255,255,255,0.02);
+  z-index: 40;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.ed-contextbar > * {
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .ed-contextbar {
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,0.02);
+}
+
+/* Tool Buttons */
+.ed-tool-btn {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ed-btn-bg);
+  border: 1px solid transparent;
+  color: var(--ed-text-secondary);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  box-shadow: var(--ed-neumorph-shadow-out);
+  flex-shrink: 0;
+}
+
+.ed-tool-btn:hover {
+  background: var(--ed-btn-hover);
+  color: var(--ed-text-primary);
+  transform: translateY(-1px);
+}
+
+.ed-tool-btn:active {
+  transform: scale(0.92);
+}
+
+.ed-tool-btn.active {
+  background: var(--ed-btn-active);
+  color: var(--ed-accent);
+  border-color: var(--ed-glass-border);
+  box-shadow: var(--ed-neumorph-shadow-in);
+  text-shadow: 0 0 8px var(--ed-accent-glow);
+}
+
+/* Left Toolbar (Floating) */
+.ed-left-toolbar {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  bottom: 16px;
+  width: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  gap: 6px;
+  border-radius: 16px;
+  z-index: 20;
+}
+
+.ed-toolbar-divider {
+  width: 24px;
+  height: 1px;
+  background: var(--ed-glass-border);
+  margin: 4px 0;
+  flex-shrink: 0;
+}
+
+/* Right Bento Panel (Floating) */
+.ed-right-panel {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  bottom: 16px;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.ed-right-panel > * {
+  pointer-events: auto;
+}
+
+/* Bento Cards */
+.ed-bento-card {
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ed-bento-header {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ed-text-primary);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Layer Item */
+.ed-layer-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.ed-layer-item:hover {
+  background: var(--ed-btn-hover);
+}
+
+.ed-layer-item.active {
+  background: var(--ed-btn-active);
+  border-color: var(--ed-glass-border);
+  box-shadow: var(--ed-neumorph-shadow-in);
+}
+
+.ed-layer-thumb {
+  width: 32px;
+  height: 24px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.1);
+  background-image: 
+    linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%), 
+    linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.1) 75%), 
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.1) 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+  border: 1px solid var(--ed-glass-border);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ed-layer-name {
+  flex: 1;
+  font-size: 12px;
+  color: var(--ed-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Custom Sliders */
+.ed-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 60px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+}
+
+.ed-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ed-accent);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--ed-accent-glow);
+  transition: transform 0.1s ease;
+}
+
+.ed-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+}
+
+/* Status Bar */
+.ed-statusbar {
+  height: 26px;
+  min-height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: var(--ed-glass-bg);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--ed-glass-border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ed-text-secondary);
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+/* Form Controls - Dark Themed Inputs & Selects */
+.ed-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: rgba(18, 24, 38, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 6px;
+  padding: 4px 24px 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  color-scheme: dark;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.ed-select:hover {
+  border-color: rgba(192, 132, 252, 0.5) !important;
+  background-color: rgba(25, 32, 50, 0.95) !important;
+}
+
+.ed-select option {
+  background-color: #0f141e !important;
+  color: #ffffff !important;
+  padding: 6px;
+}
+
+.ed-input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: rgba(18, 24, 38, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  outline: none;
+  color-scheme: dark;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.ed-input:focus {
+  border-color: var(--ed-accent) !important;
+  box-shadow: 0 0 0 1px var(--ed-accent), inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Scrollbar for Editor Panels */
+.ed-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.ed-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ed-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+.ed-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

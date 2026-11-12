@@ -1,0 +1,801 @@
+/* ═══════════════════════════════════════════════════════
+   AGENT WORKSPACE – Unified AI Agent & Detection CSS
+   100% Full-Height WSI Viewer with Pan & Drag Movement,
+   Ultra-Professional AgentChat with Multi-Provider Selector,
+   Draggable ROI Modal, Real Slide Thumbnails.
+═══════════════════════════════════════════════════════ */
+
+.aw-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-0, transparent);
+  color: var(--text-1);
+}
+
+/* ── HEADER ────────────────────────────────────────── */
+.aw-header {
+  height: 46px;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--border-2);
+  background: var(--surface-elevated, rgba(10, 13, 20, 0.7));
+  backdrop-filter: blur(16px);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.aw-header-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: 0.02em;
+  margin-right: 12px;
+  white-space: nowrap;
+}
+
+.aw-header-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-2);
+  font-size: 11px;
+  color: var(--text-2);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.aw-header-pill:hover {
+  background: var(--bg-3);
+  color: var(--text-1);
+  border-color: var(--border-3);
+}
+
+.aw-header-pill.active {
+  background: var(--secondary);
+  border-color: rgba(91, 168, 245, 0.4);
+  color: var(--primary);
+}
+
+.aw-header-pill .dot-live {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ── MAIN BODY GRID ────────────────────────────────── */
+.aw-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  grid-template-rows: 1fr;
+  gap: 10px;
+  padding: 10px 10px 0 10px;
+  min-height: 0;
+}
+
+/* ── WSI VIEWER ────────────────────────────────────── */
+.aw-wsi {
+  grid-column: 1;
+  grid-row: 1;
+  border-radius: 14px;
+  border: 1px solid var(--border-2);
+  background: var(--surface, rgba(8, 11, 18, 0.6));
+  backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+[data-theme="light"] .aw-wsi {
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.aw-wsi-topbar {
+  height: 38px;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-2);
+  background: var(--bg-2);
+  backdrop-filter: blur(8px);
+  z-index: 5;
+  flex-shrink: 0;
+}
+
+/* ── FOLDER SLIDES GALLERY STRIP (REAL THUMBNAILS) ── */
+.aw-slides-strip {
+  height: 54px;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--border-2);
+  overflow-x: auto;
+  flex-shrink: 0;
+  z-index: 4;
+}
+
+.aw-slide-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--border-2);
+  background: var(--surface);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.aw-slide-mini-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid var(--border-3);
+  flex-shrink: 0;
+}
+
+.aw-slide-chip:hover {
+  border-color: var(--border-3);
+  background: var(--bg-2);
+}
+
+.aw-slide-chip.active {
+  border-color: var(--primary);
+  background: var(--secondary);
+  box-shadow: 0 0 10px rgba(91, 168, 245, 0.2);
+}
+
+.aw-zoom-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.aw-zoom-trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-3);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.aw-zoom-trigger:hover {
+  border-color: var(--border-3);
+  background: var(--bg-4);
+}
+
+.aw-zoom-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  width: 110px;
+  border-radius: 8px;
+  border: 1px solid var(--border-3);
+  background: var(--popover);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 50;
+  overflow: hidden;
+  padding: 4px 0;
+}
+
+.aw-zoom-item {
+  padding: 6px 12px;
+  font-size: 11px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.12s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.aw-zoom-item:hover, .aw-zoom-item.active {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.aw-wsi-canvas-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-1);
+  user-select: none;
+}
+
+.aw-wsi-canvas-area.tool-select { cursor: crosshair; }
+.aw-wsi-canvas-area.tool-pan { cursor: grab; }
+.aw-wsi-canvas-area.tool-pan.panning { cursor: grabbing; }
+
+.aw-wsi-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  image-rendering: pixelated;
+  max-width: none;
+  max-height: none;
+  pointer-events: none;
+}
+
+.aw-wsi-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+}
+
+.aw-wsi-toolbar {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 10;
+}
+
+.aw-tool-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-2);
+  background: var(--surface-elevated);
+  backdrop-filter: blur(8px);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.aw-tool-btn:hover, .aw-tool-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+.aw-wsi-bottombar {
+  position: absolute;
+  bottom: 8px;
+  left: 54px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 10;
+}
+
+.aw-wsi-scalebar {
+  background: var(--surface-elevated);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.aw-wsi-coords {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text-3);
+  font-family: monospace;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.aw-wsi-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  color: var(--text-3);
+}
+
+/* ── RIGHT COLUMN: FULL-HEIGHT AI AGENT ──────────── */
+.aw-right {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.aw-chat {
+  flex: 1;
+  height: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border-2);
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.aw-chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-2);
+  flex-shrink: 0;
+}
+
+/* Provider Bar & Selectors */
+.aw-provider-bar {
+  padding: 8px 12px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.aw-select-box {
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 10px;
+  color: var(--text-1);
+  outline: none;
+  cursor: pointer;
+}
+
+.aw-key-badge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 99px;
+}
+
+.aw-key-badge.set {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.aw-key-badge.missing {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Settings Drawer */
+.aw-settings-drawer {
+  padding: 10px 14px;
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--border-2);
+  flex-shrink: 0;
+}
+
+.aw-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.aw-prompt-input {
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 10px;
+  color: var(--text-1);
+  outline: none;
+  width: 100%;
+}
+
+.aw-agent-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-2);
+  flex-shrink: 0;
+  background: var(--accent);
+}
+
+.aw-agent-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--secondary);
+  border: 1px solid rgba(91, 168, 245, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.aw-ctx-card {
+  margin: 10px 14px 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.aw-ctx-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid var(--border-2);
+  flex-shrink: 0;
+}
+
+.aw-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.aw-msg {
+  display: flex;
+  max-width: 92%;
+}
+
+.aw-msg-agent { align-self: flex-start; }
+.aw-msg-user  { align-self: flex-end; }
+
+.aw-msg-bubble {
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.aw-msg-agent .aw-msg-bubble {
+  background: var(--bg-3);
+  color: var(--text-1);
+  border: 1px solid var(--border-2);
+  border-bottom-left-radius: 4px;
+}
+
+.aw-msg-user .aw-msg-bubble {
+  background: var(--primary);
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.aw-run-btn {
+  margin: 8px 14px;
+  padding: 10px 0;
+  border-radius: 20px;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s, transform 0.1s;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(91, 168, 245, 0.25);
+}
+
+.aw-run-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.aw-run-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.aw-input-area {
+  padding: 10px 14px 14px;
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-2);
+}
+
+.aw-input-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  border-radius: 20px;
+  padding: 5px 8px 5px 14px;
+}
+
+.aw-input-box input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 12px;
+  color: var(--text-1);
+}
+
+.aw-icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.aw-icon-btn:hover, .aw-icon-btn.active { color: var(--text-1); background: var(--bg-3); }
+
+.aw-send-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  flex-shrink: 0;
+}
+
+/* ── DRAGGABLE FLOATING MODAL (Detection Objects) ── */
+.aw-draggable-modal {
+  position: fixed;
+  z-index: 100;
+  border-radius: 16px;
+  border: 1px solid var(--border-3);
+  background: var(--popover);
+  backdrop-filter: blur(24px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.aw-draggable-header {
+  height: 42px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--border-2);
+  cursor: move;
+  user-select: none;
+}
+
+.aw-det-table-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.aw-det-row-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-2);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.aw-det-row-item:hover {
+  background: var(--bg-2);
+  border-color: var(--border-3);
+}
+
+.aw-det-row-item.selected {
+  background: var(--secondary);
+  border-color: var(--primary);
+}
+
+.aw-det-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-3);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.aw-det-badge-idx {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-1);
+  flex-shrink: 0;
+}
+
+/* ── FOOTER TOOLBAR ────────────────────────────────── */
+.aw-footer {
+  height: 52px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  background: var(--surface-elevated);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border-2);
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.aw-footer-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-2);
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.aw-footer-btn:hover {
+  background: var(--bg-3);
+  color: var(--text-1);
+  border-color: var(--border-3);
+}
+
+.aw-footer-btn.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(91, 168, 245, 0.3);
+}
+
+.aw-footer-btn.primary:hover { opacity: 0.9; }
+
+/* ── SLIDERS & BADGES ────────────────────────────── */
+.aw-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 99px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.aw-badge-blue   { background: rgba(91, 168, 245, 0.15); color: #5BA8F5; }
+.aw-badge-green  { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.aw-badge-purple { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+
+.aw-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--bg-3);
+  outline: none;
+}
+
+.aw-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  border: 2px solid var(--popover);
+}
+
+.aw-fade-in { animation: fadeIn 0.2s ease-out both; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Modal Backdrops & Cards */
+.aw-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.aw-modal-card {
+  background: var(--surface-elevated, #0f172a);
+  border: 1px solid var(--border-2, #334155);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.aw-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-2);
+  background: var(--bg-2);
+}

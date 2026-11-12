@@ -1,0 +1,721 @@
+/* Anatomy Atelier — adapted for TissueAI glassmorphism theme */
+
+/* ── Theme-adapted color tokens ── */
+.anat-app-shell {
+  --anat-ink: var(--text-1, #2f2a27);
+  --anat-muted: var(--text-3, #8d847c);
+  --anat-canvas: var(--bg-1, #f7f0e7);
+  --anat-paper: var(--surface, rgba(255, 251, 244, 0.82));
+  --anat-line: var(--border-2, rgba(117, 91, 70, 0.18));
+  --anat-coral: #eb7c6b;
+  --anat-lavender: #8d6bcc;
+  --anat-sage: #769d74;
+  --anat-shadow: 0 18px 48px rgba(0, 0, 0, 0.06);
+  --anat-font-serif: "Cormorant Garamond", var(--font-serif), Georgia, serif;
+  --anat-font-sans: "DM Sans", var(--font-sans), system-ui, sans-serif;
+  --anat-font-hand: "Comic Sans MS", "Bradley Hand", cursive;
+  /* Dark-mode adaptive overlays */
+  --anat-overlay-light: rgba(255, 255, 255, 0.06);
+  --anat-overlay-card: var(--surface, rgba(255, 251, 244, 0.68));
+  --anat-tip-bg: #fff2c9;
+  --anat-tip-color: #534a43;
+  --anat-viewer-bg: radial-gradient(circle at 55% 45%, rgba(255,255,255,.92), rgba(255,250,242,.72) 45%, rgba(246,236,224,.7));
+  --anat-viewer-inset: rgba(124,82,51,.04);
+  --anat-tools-bg: rgba(253,250,244,.82);
+  --anat-tools-shadow: rgba(75,54,40,.08);
+  --anat-callout-bg: rgba(255,252,247,.92);
+  --anat-callout-border: rgba(116,89,67,.14);
+  --anat-callout-shadow: rgba(83,59,42,.12);
+  --anat-callout-close-hover: rgba(116,89,67,.09);
+  --anat-auto-rotate-bg: rgba(255,252,247,.88);
+  --anat-auto-rotate-shadow: rgba(65,45,32,.08);
+  --anat-loader-bg: rgba(251,246,238,.45);
+  --anat-specimen-bg: radial-gradient(circle, #fff 25%, rgba(237,142,120,.12));
+  --anat-glyph-bg: radial-gradient(circle at 35% 28%, #fff, color-mix(in srgb, var(--item-accent, #ccc), white 84%));
+  --anat-glyph-shadow: rgba(121,86,67,.07);
+  --anat-active-bg: rgba(253,234,226,.72);
+  --anat-active-shadow: rgba(195,91,70,.07);
+  --anat-hover-bg: rgba(255,255,255,.06);
+  --anat-view-btn-hover: rgba(255,255,255,.18);
+  --anat-card-bg: rgba(255,251,244,.68);
+  --anat-curiosity-bg: linear-gradient(145deg, rgba(255,247,234,.7), rgba(247,231,210,.86));
+  --anat-compare-bg: rgba(255,251,245,.94);
+  --anat-compare-shadow: rgba(64,43,29,.2);
+  --anat-modal-bg: #fffaf2;
+  --anat-modal-shadow: rgba(63,42,28,.24);
+  --anat-modal-backdrop: rgba(52,39,30,.24);
+  --anat-modal-demo-bg: radial-gradient(circle, #fff, #f5ded6);
+  --anat-modal-figure-bg: radial-gradient(circle at 50% 42%, #fff, #f8ecdf);
+  --anat-quiz-btn-bg: rgba(255,255,255,.5);
+  --anat-quiz-btn-hover: rgba(255,255,255,.7);
+  --anat-medical-bg: rgba(142,109,197,.065);
+  --anat-medical-color: #6d568f;
+  --anat-fun-bg: rgba(198,154,94,.09);
+  --anat-fun-color: #86663c;
+  --anat-action-border: #c9b3df;
+  --anat-action-color: #8062b6;
+  --anat-action-hover: rgba(255,255,255,.28);
+  --anat-green-border: #bdcfaa;
+  --anat-green-color: #789067;
+  --anat-blue-border: #b9c6e3;
+  --anat-blue-color: #6e88bd;
+  --anat-blue-active-bg: rgba(111,137,192,.1);
+  --anat-blue-active-border: #8ca2d0;
+  --anat-kicker-color: #795c55;
+  --anat-kicker-svg: #ee8a7a;
+  --anat-list-heart: #e9968b;
+  --anat-play-badge-bg: rgba(255,255,255,.7);
+  --anat-play-badge-color: #b4a99f;
+  --anat-microscope-shadow: inset 0 0 0 5px rgba(255,255,255,.38), 0 6px 18px rgba(121,72,73,.08);
+  --anat-art-fallback-bg: radial-gradient(circle at 40% 32%, #fff, color-mix(in srgb, var(--art-accent, #ccc), white 84%));
+  --anat-switch-off: #c8c2bb;
+  --anat-switch-knob: white;
+  --anat-drawer-bg: #fffaf3;
+}
+
+/* ── Dark theme overrides ── */
+.dark .anat-app-shell,
+[data-theme="dark"] .anat-app-shell {
+  --anat-shadow: 0 18px 48px rgba(0, 0, 0, 0.3);
+  --anat-overlay-light: rgba(255, 255, 255, 0.04);
+  --anat-tip-bg: #2a2520;
+  --anat-tip-color: #c8bfb6;
+  --anat-viewer-bg: radial-gradient(circle at 55% 45%, rgba(30,30,40,.95), rgba(20,20,30,.9) 45%, rgba(15,15,25,.85));
+  --anat-viewer-inset: rgba(0,0,0,.15);
+  --anat-tools-bg: rgba(20,22,30,.85);
+  --anat-tools-shadow: rgba(0,0,0,.3);
+  --anat-callout-bg: rgba(20,22,30,.92);
+  --anat-callout-border: rgba(255,255,255,.1);
+  --anat-callout-shadow: rgba(0,0,0,.4);
+  --anat-callout-close-hover: rgba(255,255,255,.1);
+  --anat-auto-rotate-bg: rgba(20,22,30,.88);
+  --anat-auto-rotate-shadow: rgba(0,0,0,.3);
+  --anat-loader-bg: rgba(10,12,18,.55);
+  --anat-specimen-bg: radial-gradient(circle, rgba(30,30,40,.8) 25%, rgba(237,142,120,.08));
+  --anat-glyph-bg: radial-gradient(circle at 35% 28%, rgba(40,40,50,.9), color-mix(in srgb, var(--item-accent, #555), rgba(30,30,40,.9) 84%));
+  --anat-glyph-shadow: rgba(0,0,0,.2);
+  --anat-active-bg: rgba(253,234,226,.12);
+  --anat-active-shadow: rgba(195,91,70,.1);
+  --anat-hover-bg: rgba(255,255,255,.06);
+  --anat-view-btn-hover: rgba(255,255,255,.08);
+  --anat-card-bg: rgba(20,22,30,.6);
+  --anat-curiosity-bg: linear-gradient(145deg, rgba(30,28,35,.7), rgba(25,23,30,.86));
+  --anat-compare-bg: rgba(20,22,30,.94);
+  --anat-compare-shadow: rgba(0,0,0,.5);
+  --anat-modal-bg: #1a1c24;
+  --anat-modal-shadow: rgba(0,0,0,.6);
+  --anat-modal-backdrop: rgba(0,0,0,.5);
+  --anat-modal-demo-bg: radial-gradient(circle, rgba(40,40,50,.9), rgba(30,25,30,.8));
+  --anat-modal-figure-bg: radial-gradient(circle at 50% 42%, rgba(40,40,50,.9), rgba(25,22,30,.8));
+  --anat-quiz-btn-bg: rgba(255,255,255,.06);
+  --anat-quiz-btn-hover: rgba(255,255,255,.12);
+  --anat-medical-bg: rgba(142,109,197,.12);
+  --anat-medical-color: #b8a0d8;
+  --anat-fun-bg: rgba(198,154,94,.12);
+  --anat-fun-color: #c9a86c;
+  --anat-action-border: rgba(201,179,223,.3);
+  --anat-action-color: #b8a0d8;
+  --anat-action-hover: rgba(255,255,255,.08);
+  --anat-green-border: rgba(189,207,170,.3);
+  --anat-green-color: #a0c08e;
+  --anat-blue-border: rgba(185,198,227,.3);
+  --anat-blue-color: #a0b8d8;
+  --anat-blue-active-bg: rgba(111,137,192,.15);
+  --anat-blue-active-border: rgba(140,162,208,.5);
+  --anat-kicker-color: #c0a0a0;
+  --anat-kicker-svg: #ee8a7a;
+  --anat-list-heart: #e9968b;
+  --anat-play-badge-bg: rgba(255,255,255,.12);
+  --anat-play-badge-color: #8a8078;
+  --anat-microscope-shadow: inset 0 0 0 5px rgba(255,255,255,.08), 0 6px 18px rgba(0,0,0,.2);
+  --anat-art-fallback-bg: radial-gradient(circle at 40% 32%, rgba(40,40,50,.9), color-mix(in srgb, var(--art-accent, #555), rgba(30,30,40,.9) 84%));
+  --anat-switch-off: #444;
+  --anat-switch-knob: #888;
+  --anat-drawer-bg: #1a1c24;
+}
+
+.anat-app-shell {
+  min-height: 100%;
+  padding: 22px 24px 24px;
+  overflow: hidden;
+  color: var(--anat-ink);
+  font-family: var(--anat-font-sans);
+  font-size: 14px;
+}
+
+/* ── Topbar ── */
+.anat-topbar {
+  height: 68px;
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) auto minmax(260px, 1fr) auto;
+  align-items: center;
+  gap: 22px;
+  max-width: 1720px;
+  margin: 0 auto;
+}
+
+.anat-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.anat-brand strong {
+  font: 500 clamp(28px, 2.2vw, 42px)/1 var(--anat-font-serif);
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  color: var(--anat-ink);
+}
+
+.anat-brand sup { color: var(--anat-coral); font: 400 14px var(--anat-font-sans); padding-left: 3px; }
+.anat-brand em, .anat-info-panel em, .anat-learning-cards em, .anat-learning-modal > em {
+  color: var(--anat-lavender);
+  font-family: var(--anat-font-hand);
+  font-style: italic;
+  letter-spacing: .01em;
+}
+.anat-brand em { font-size: 12px; white-space: nowrap; }
+
+.anat-main-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.anat-main-nav button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  padding: 12px 15px;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--anat-muted);
+  transition: background 0.2s, color 0.2s;
+}
+.anat-main-nav button:hover { color: var(--anat-ink); background: var(--anat-overlay-light); }
+.anat-main-nav button.active { background: rgba(238, 124, 106, .075); box-shadow: inset 0 0 0 1px rgba(215, 112, 91, .12); color: var(--anat-ink); }
+
+.anat-search-box {
+  justify-self: end;
+  width: min(100%, 280px);
+  height: 44px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--anat-line);
+  border-radius: 999px;
+  background: var(--anat-paper);
+  color: var(--anat-muted);
+}
+.anat-search-box input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--anat-ink); font-size: 12px; }
+.anat-search-box input::placeholder { color: var(--anat-muted); }
+
+.anat-profile, .anat-mobile-library-trigger {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: var(--anat-ink);
+}
+.anat-profile span {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(82,64,50,.5);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(140deg, #c46854, #efb59c);
+  color: white;
+  font: 600 11px var(--anat-font-serif);
+  box-shadow: inset 0 0 0 3px rgba(247,238,229,.4);
+}
+.anat-mobile-library-trigger { display: none; }
+
+/* ── Workspace ── */
+.anat-workspace {
+  max-width: 1720px;
+  height: min(760px, calc(100vh - 128px));
+  min-height: 620px;
+  margin: 12px auto 0;
+  display: grid;
+  grid-template-columns: 285px minmax(620px, 1fr) 330px;
+  gap: 18px;
+}
+
+.anat-organ-library, .anat-viewer-shell, .anat-info-panel {
+  border: 1px solid var(--anat-line);
+  border-radius: 26px;
+  background: var(--anat-paper);
+  box-shadow: var(--anat-shadow), inset 0 1px 0 var(--anat-overlay-light);
+}
+
+.anat-organ-library { padding: 16px 14px 14px; display: flex; flex-direction: column; min-height: 0; }
+.anat-panel-heading { height: 33px; display: flex; align-items: center; justify-content: space-between; padding: 0 5px 10px; }
+.anat-panel-heading > span, .anat-info-kicker, .anat-info-panel h2 {
+  text-transform: uppercase;
+  letter-spacing: .13em;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--anat-muted);
+}
+.anat-panel-heading button { border: 1px solid var(--anat-line); background: var(--anat-paper); width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; cursor: pointer; color: var(--anat-muted); }
+.anat-panel-heading .anat-mobile-close { display: none; }
+.anat-organ-list { display: flex; flex-direction: column; gap: 4px; min-height: 0; overflow: auto; scrollbar-width: none; }
+.anat-organ-item {
+  width: 100%;
+  min-height: 70px;
+  display: grid;
+  grid-template-columns: 54px 1fr 18px;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--anat-ink);
+  transition: background 0.2s, border-color 0.2s;
+}
+.anat-organ-item:hover { background: var(--anat-hover-bg); }
+.anat-organ-item.active { background: var(--anat-active-bg); border-color: color-mix(in srgb, var(--item-accent), transparent 55%); box-shadow: 0 8px 20px var(--anat-active-shadow); }
+.anat-organ-glyph {
+  width: 47px;
+  height: 47px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--anat-glyph-bg);
+  box-shadow: inset 0 0 0 1px var(--anat-glyph-shadow);
+}
+.anat-organ-glyph img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; transform: scale(1.14); }
+.anat-organ-item b { display: block; font: 500 17px/1.1 var(--anat-font-serif); color: var(--anat-ink); }
+.anat-organ-item small { display: block; margin-top: 5px; color: var(--anat-muted); font-size: 10px; }
+.anat-organ-item .anat-favorite { color: #ef8d7d; }
+
+/* ── Category Groups ── */
+.anat-category-group { margin-bottom: 2px; }
+.anat-category-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--anat-ink);
+  transition: background 0.2s;
+  font-family: var(--anat-font-sans);
+}
+.anat-category-header:hover { background: var(--anat-hover-bg); }
+.anat-category-icon { font-size: 15px; line-height: 1; flex-shrink: 0; }
+.anat-category-label {
+  flex: 1;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cat-color, var(--anat-muted));
+}
+.anat-category-count {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--anat-muted);
+  background: var(--anat-hover-bg);
+  padding: 1px 6px;
+  border-radius: 9999px;
+  min-width: 18px;
+  text-align: center;
+}
+.anat-category-chevron {
+  color: var(--anat-muted);
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+.anat-category-header.expanded .anat-category-chevron {
+  transform: rotate(180deg);
+}
+.anat-category-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 4px;
+  animation: anat-cat-expand 0.2s ease-out;
+}
+@keyframes anat-cat-expand {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.anat-view-all, .anat-learning-cards article > button:not(.anat-organ-card-image) {
+  min-height: 36px;
+  border: 1px solid var(--anat-line);
+  border-radius: 9px;
+  background: var(--anat-paper);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 13px;
+  cursor: pointer;
+  font: 500 12px var(--anat-font-serif);
+  color: var(--anat-ink);
+  transition: background 0.2s;
+}
+.anat-view-all:hover, .anat-learning-cards article > button:not(.anat-organ-card-image):hover { background: var(--anat-view-btn-hover); }
+.anat-organ-library .anat-view-all { margin-top: 9px; }
+.anat-organ-library blockquote { display: none; }
+
+/* ── Viewer ── */
+.anat-viewer-shell {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  background: var(--anat-viewer-bg), var(--anat-paper);
+}
+.anat-viewer-shell:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 90px var(--anat-viewer-inset);
+}
+.anat-viewer-glow { position: absolute; width: 420px; height: 420px; left: 50%; top: 47%; transform: translate(-50%,-50%); border-radius: 50%; background: color-mix(in srgb, var(--organ-accent), transparent 94%); filter: blur(72px); opacity: .55; }
+.anat-three-mount { position: absolute; inset: 0; }
+.anat-three-mount canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+
+.anat-viewer-tools {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  z-index: 3;
+  transform: translateY(-50%);
+  width: 62px;
+  padding: 8px 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border: 1px solid var(--anat-line);
+  border-radius: 20px;
+  background: var(--anat-tools-bg);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 12px 30px var(--anat-tools-shadow);
+}
+.anat-tool-button { height: 60px; border: 0; border-radius: 12px; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; font: 500 9px/1 var(--anat-font-serif); color: var(--anat-muted); transition: color 0.2s, background 0.2s; }
+.anat-tool-button:hover { color: var(--anat-ink); background: var(--anat-overlay-light); }
+.anat-tool-button.active { color: var(--anat-coral); background: rgba(238,124,106,.08); }
+.anat-tool-button:nth-last-child(1) { border-top: 1px solid var(--anat-line); border-radius: 0 0 12px 12px; }
+
+.anat-tip-note {
+  position: absolute;
+  right: 16px;
+  top: 18px;
+  z-index: 2;
+  width: 155px;
+  min-height: 140px;
+  padding: 14px 17px;
+  transform: rotate(-4deg);
+  background: var(--anat-tip-bg);
+  box-shadow: 0 7px 13px rgba(0,0,0,.15);
+  color: var(--anat-tip-color);
+}
+.anat-tip-note span { display: flex; align-items: center; gap: 4px; color: var(--anat-lavender); font: italic 12px var(--anat-font-hand); }
+.anat-tip-note p { margin: 8px 0 0; font: 500 14px/1.55 var(--anat-font-serif); }
+
+.anat-hotspot-callout {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+.anat-callout-body {
+  position: absolute;
+  top: -30px;
+  width: 168px;
+  padding: 10px 26px 11px 12px;
+  border: 1px solid var(--anat-callout-border);
+  border-radius: 13px;
+  background: var(--anat-callout-bg);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--hotspot-color), transparent 78%), 0 12px 28px var(--anat-callout-shadow);
+  animation: anat-callout-in .26s cubic-bezier(.2,.85,.3,1);
+  transition: opacity .2s ease;
+}
+.anat-hotspot-callout[data-side="right"] .anat-callout-body { left: 22px; }
+.anat-hotspot-callout[data-side="left"] .anat-callout-body { right: 22px; }
+.anat-hotspot-callout[data-behind="true"] .anat-callout-body { opacity: .3; }
+.anat-callout-body:before {
+  content: "";
+  position: absolute;
+  top: 32px;
+  width: 18px;
+  height: 1px;
+  background: var(--hotspot-color);
+  opacity: .55;
+}
+.anat-hotspot-callout[data-side="right"] .anat-callout-body:before { right: 100%; }
+.anat-hotspot-callout[data-side="left"] .anat-callout-body:before { left: 100%; }
+.anat-callout-body b { display: block; padding-left: 13px; font: 500 13px var(--anat-font-serif); color: var(--anat-ink); }
+.anat-callout-body b:before { content: ""; position: absolute; left: 12px; top: 15px; width: 7px; height: 7px; border-radius: 50%; background: var(--hotspot-color); }
+.anat-callout-body small { display: block; margin-top: 3px; padding-left: 13px; color: var(--anat-muted); font-size: 10px; line-height: 1.35; }
+.anat-callout-close { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--anat-muted); cursor: pointer; }
+.anat-callout-close:hover { background: var(--anat-callout-close-hover); }
+@keyframes anat-callout-in { from { opacity: 0; transform: translateX(-6px) scale(.96); } }
+
+.anat-hotspot-index { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.anat-auto-rotate {
+  position: absolute;
+  right: 17px;
+  bottom: 16px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--anat-line);
+  border-radius: 13px;
+  padding: 8px 10px 8px 12px;
+  background: var(--anat-auto-rotate-bg);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 5px 14px var(--anat-auto-rotate-shadow);
+  cursor: pointer;
+  font: 500 10px var(--anat-font-serif);
+  color: var(--anat-ink);
+}
+.anat-switch { width: 29px; height: 17px; padding: 2px; border-radius: 99px; background: var(--anat-switch-off); }
+.anat-switch i { display: block; width: 13px; height: 13px; border-radius: 50%; background: var(--anat-switch-knob); box-shadow: 0 1px 4px rgba(0,0,0,.17); }
+.anat-switch.on { background: #70a9cb; }
+.anat-switch.on i { margin-left: 12px; }
+.anat-view-caption { position: absolute; left: 98px; bottom: 17px; display: flex; flex-direction: column; gap: 2px; color: var(--anat-muted); font-size: 9px; text-transform: uppercase; letter-spacing: .1em; }
+.anat-view-caption strong { color: var(--anat-ink); font: 500 13px var(--anat-font-serif); text-transform: none; letter-spacing: 0; }
+
+.anat-model-loader { position: absolute; inset: 0; z-index: 6; display: grid; place-content: center; justify-items: center; gap: 8px; background: var(--anat-loader-bg); backdrop-filter: blur(4px); }
+.anat-model-loader strong { font: 500 18px var(--anat-font-serif); color: var(--anat-ink); }
+.anat-model-loader span { color: var(--anat-muted); font-size: 10px; }
+.anat-loader-orbit { width: 48px; height: 48px; border: 1px dashed var(--anat-coral); border-radius: 50%; display: grid; place-items: center; color: var(--anat-coral); animation: anat-orbit 2.4s linear infinite; }
+@keyframes anat-orbit { to { transform: rotate(360deg); } }
+
+/* ── Info Panel ── */
+.anat-info-panel { padding: 21px 20px 17px; overflow: auto; scrollbar-width: none; }
+.anat-info-kicker { display: flex; align-items: center; gap: 7px; color: var(--anat-kicker-color); }
+.anat-info-kicker svg { color: var(--anat-kicker-svg); }
+.anat-info-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 15px; }
+.anat-info-title-row h1 { margin: 0; font: 500 44px/.95 var(--anat-font-serif); letter-spacing: -.02em; color: var(--anat-ink); }
+.anat-info-title-row em { display: block; margin-top: 8px; font-size: 13px; }
+.anat-specimen-stamp { width: 86px; height: 86px; display: grid; place-items: center; border-radius: 50%; overflow: hidden; background: var(--anat-specimen-bg); }
+.anat-specimen-stamp img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; animation: anat-card-art-in .45s cubic-bezier(.2,.8,.3,1); }
+.anat-description { margin: 22px 0 16px; font: 500 15px/1.42 var(--anat-font-serif); color: var(--anat-ink); }
+.anat-rule { height: 1px; background: var(--anat-line); }
+.anat-info-panel h2 { margin: 17px 0 10px; font-style: italic; font-weight: 500; color: var(--anat-muted); }
+.anat-key-facts { margin: 0; display: flex; flex-direction: column; gap: 11px; }
+.anat-key-facts > div { display: grid; grid-template-columns: 105px 1fr; gap: 8px; align-items: baseline; }
+.anat-key-facts dt { display: flex; gap: 8px; font: 500 13px var(--anat-font-serif); color: var(--anat-ink); }
+.anat-key-facts dt span { color: var(--anat-coral); width: 16px; }
+.anat-key-facts dd { margin: 0; color: var(--anat-muted); font: 500 12px/1.35 var(--anat-font-serif); }
+.anat-medical-note, .anat-fun-note { margin-top: 15px; display: flex; gap: 9px; padding: 10px; border-radius: 12px; }
+.anat-medical-note { background: var(--anat-medical-bg); color: var(--anat-medical-color); }
+.anat-fun-note { background: var(--anat-fun-bg); color: var(--anat-fun-color); }
+.anat-medical-note p, .anat-fun-note p { margin: 0; font: 500 11px/1.35 var(--anat-font-serif); }
+.anat-medical-note b, .anat-fun-note b { display: block; margin-bottom: 2px; color: var(--anat-ink); }
+.anat-medical-note svg, .anat-fun-note svg { flex: none; }
+.anat-lesson-button { width: 100%; min-height: 42px; margin-top: 14px; padding: 0 16px; display: flex; justify-content: space-between; align-items: center; border: 0; border-radius: 10px; background: linear-gradient(110deg, #ed8a72, #e87868); color: white; cursor: pointer; box-shadow: 0 9px 20px rgba(208,90,70,.16); font-size: 11px; transition: opacity 0.2s; }
+.anat-lesson-button:hover { opacity: 0.9; }
+.anat-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 9px; }
+.anat-action-grid button { min-height: 36px; border: 1px solid var(--anat-action-border); border-radius: 9px; background: var(--anat-overlay-light); display: flex; gap: 8px; align-items: center; justify-content: center; color: var(--anat-action-color); cursor: pointer; font-size: 10px; transition: background 0.2s; }
+.anat-action-grid button:hover { background: var(--anat-action-hover); }
+.anat-action-grid button:nth-child(2) { border-color: var(--anat-green-border); color: var(--anat-green-color); }
+.anat-action-grid button:last-child { grid-column: 1/-1; border-color: var(--anat-blue-border); color: var(--anat-blue-color); }
+.anat-action-grid button.active { background: var(--anat-blue-active-bg); box-shadow: inset 0 0 0 1px var(--anat-blue-active-border); }
+
+/* ── Learning Cards ── */
+.anat-learning-cards {
+  --art-max: 220px;
+  --card-gap-top: 8px;
+  --card-gap-bottom: 12px;
+  max-width: 1720px;
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: 1.05fr repeat(5, 1fr);
+  gap: 16px;
+}
+.anat-learning-cards article { min-height: 212px; min-width: 0; border: 1px solid var(--anat-line); border-radius: 23px; background: var(--anat-card-bg); box-shadow: var(--anat-shadow); padding: 13px 14px 12px; display: flex; flex-direction: column; overflow: hidden; }
+.anat-learning-cards article > header { display: flex; align-items: flex-start; justify-content: space-between; min-height: 38px; flex: none; }
+.anat-learning-cards em { display: block; text-transform: uppercase; font-size: 10px; color: var(--anat-lavender); }
+.anat-learning-cards h3 { margin: 3px 0 0; font: 500 13px/1.2 var(--anat-font-serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--anat-ink); }
+.anat-learning-cards article > button:not(.anat-organ-card-image) { margin-top: auto; width: 100%; min-height: 30px; }
+.anat-curiosity-card { justify-content: center; padding-left: 28px !important; background: var(--anat-curiosity-bg) !important; }
+.anat-curiosity-card span { color: #c8a0b8; font-size: 28px; }
+.anat-curiosity-card p { margin: 5px 0 10px; font: 500 16px/1.4 var(--anat-font-serif); color: var(--anat-ink); }
+.anat-curiosity-card em { text-transform: none; font-size: 13px; }
+
+.anat-art-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--anat-art-fallback-bg);
+  color: color-mix(in srgb, var(--art-accent, #888), #5f4034 26%);
+  font-family: var(--anat-font-serif);
+  font-size: 34px;
+  line-height: 1;
+}
+.anat-organ-card-image .anat-art-fallback { font-size: 42px; }
+.anat-organ-glyph .anat-art-fallback { font-size: 21px; }
+.anat-compare-organ > .anat-art-fallback { position: absolute; left: 0; top: 50%; width: 38px; height: 38px; border-radius: 50%; transform: translateY(-50%); font-size: 17px; }
+.anat-microscope-visual .anat-art-fallback { font-size: 40px; }
+.anat-modal-demo .anat-art-fallback { font-size: 52px; }
+
+.anat-organ-card-image { position: relative; overflow: hidden; isolation: isolate; flex: none; width: min(100%, var(--art-max)); max-width: 100%; aspect-ratio: 1; margin: var(--card-gap-top) auto var(--card-gap-bottom); }
+.anat-organ-card-image img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: block; mix-blend-mode: multiply; animation: anat-card-art-in .52s cubic-bezier(.2,.8,.3,1); }
+@keyframes anat-card-art-in { from { opacity: 0; transform: scale(.96) translateY(4px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.anat-microscope-visual { width: min(var(--art-max), 100%); max-height: none; border-radius: 50%; box-shadow: var(--anat-microscope-shadow); }
+.anat-microscope-visual img { border-radius: 50%; object-fit: cover; }
+.anat-comparison-visual { border-radius: 12px; }
+button.anat-organ-card-image { border: 0; padding: 0; background: transparent; cursor: pointer; font: inherit; }
+button.anat-organ-card-image:focus-visible { outline: 2px solid var(--anat-lavender); outline-offset: 2px; }
+.anat-function-visual { position: relative; display: grid; place-items: center; cursor: pointer; }
+.anat-function-visual > img, .anat-function-visual > .anat-art-fallback { position: absolute; inset: 0; }
+.anat-function-pulse { position: absolute; width: 84px; height: 84px; border: 1px solid rgba(235,124,107,.32); border-radius: 50%; animation: anat-organ-pulse 2.2s ease-out infinite; pointer-events: none; }
+@keyframes anat-organ-pulse { 0% { opacity: .7; transform: scale(.62); } 80%,100% { opacity: 0; transform: scale(1.35); } }
+.anat-play-badge { position: absolute; width: 40px; height: 40px; border: 1px solid rgba(255,255,255,.8); border-radius: 50%; background: var(--anat-play-badge-bg); color: var(--anat-play-badge-color); display: grid; place-items: center; box-shadow: 0 3px 12px rgba(0,0,0,.1); pointer-events: none; }
+.anat-learning-cards ul { list-style: none; padding: 0; margin: var(--card-gap-top) 0 var(--card-gap-bottom); flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 9px; font: 500 11px var(--anat-font-serif); }
+.anat-learning-cards li:before { content: "♥"; color: var(--anat-list-heart); margin-right: 7px; }
+.anat-system-visual { overflow: hidden; border-radius: 12px; }
+
+/* ── Compare Strip ── */
+.anat-compare-strip { position: fixed; z-index: 20; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(760px, calc(100% - 28px)); padding: 13px 16px; display: grid; grid-template-columns: 1fr auto 1fr 1.5fr auto; align-items: center; gap: 14px; border: 1px solid var(--anat-line); border-radius: 18px; background: var(--anat-compare-bg); backdrop-filter: blur(18px); box-shadow: 0 22px 60px var(--anat-compare-shadow); }
+.anat-compare-strip > div { display: flex; flex-direction: column; }
+.anat-compare-strip .anat-compare-organ { position: relative; padding-left: 45px; min-height: 38px; justify-content: center; }
+.anat-compare-organ > img { position: absolute; left: 0; top: 50%; width: 38px; height: 38px; border-radius: 50%; object-fit: cover; transform: translateY(-50%); mix-blend-mode: multiply; }
+.anat-compare-strip span { color: var(--anat-lavender); font-size: 9px; text-transform: uppercase; letter-spacing: .12em; }
+.anat-compare-strip strong { font: 500 20px var(--anat-font-serif); color: var(--anat-ink); }
+.anat-compare-strip small { color: var(--anat-muted); font-size: 9px; }
+.anat-compare-strip dl { margin: 0; display: flex; gap: 16px; }
+.anat-compare-strip dl div { max-width: 130px; }
+.anat-compare-strip dt { color: var(--anat-muted); font-size: 8px; text-transform: uppercase; }
+.anat-compare-strip dd { margin: 3px 0 0; font: 500 10px/1.2 var(--anat-font-serif); color: var(--anat-ink); }
+.anat-compare-strip > button { border: 0; background: transparent; cursor: pointer; color: var(--anat-muted); }
+
+/* ── Modal ── */
+.anat-modal-backdrop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: var(--anat-modal-backdrop); backdrop-filter: blur(8px); }
+.anat-learning-modal { width: min(460px, 100%); max-height: min(92vh, 900px); overflow: auto; scrollbar-width: none; position: relative; padding: 32px; border: 1px solid var(--anat-line); border-radius: 26px; background: var(--anat-modal-bg); box-shadow: 0 30px 90px var(--anat-modal-shadow); text-align: center; animation: anat-modal-in .35s cubic-bezier(.2,.85,.3,1); }
+.anat-learning-modal.wide { width: min(540px, 100%); }
+@keyframes anat-modal-in { from { opacity: 0; transform: translateY(14px) scale(.98); } }
+.anat-modal-close { position: absolute; top: 13px; right: 13px; width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--anat-line); border-radius: 50%; background: transparent; cursor: pointer; color: var(--anat-muted); }
+.anat-modal-icon { width: 56px; height: 56px; display: grid; place-items: center; margin: 0 auto 12px; border-radius: 50%; background: rgba(237,126,105,.1); color: var(--anat-coral); font: 500 26px var(--anat-font-serif); }
+.anat-learning-modal h2 { margin: 6px 0 12px; font: 500 34px var(--anat-font-serif); color: var(--anat-ink); }
+.anat-learning-modal > p, .anat-quiz-options p { color: var(--anat-muted); font: 500 15px/1.5 var(--anat-font-serif); }
+.anat-modal-demo { width: 135px; height: 135px; margin: 18px auto 8px; border-radius: 50%; display: grid; place-items: center; overflow: hidden; background: var(--anat-modal-demo-bg); }
+.anat-modal-demo img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; }
+.anat-modal-demo.moving img { animation: anat-heartbeat 1.1s ease-in-out infinite; }
+@keyframes anat-heartbeat { 0%,100%{transform:scale(1)} 15%{transform:scale(1.13)} 28%{transform:scale(1)} 40%{transform:scale(1.08)} }
+.anat-modal-figure { margin: 18px 0 4px; aspect-ratio: 1; max-height: 46vh; display: grid; place-items: center; overflow: hidden; border-radius: 20px; background: var(--anat-modal-figure-bg); }
+.anat-modal-figure img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+.anat-modal-figure .anat-art-fallback { font-size: 64px; }
+.anat-modal-facts { margin: 14px 0 4px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: left; }
+.anat-modal-facts dt { color: var(--anat-muted); font-size: 9px; text-transform: uppercase; letter-spacing: .1em; }
+.anat-modal-facts dd { margin: 4px 0 0; font: 500 12px/1.3 var(--anat-font-serif); color: var(--anat-ink); }
+.anat-learning-modal.wide .anat-lesson-button { margin-top: 16px; }
+
+.anat-quiz-options { display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.anat-quiz-options button { padding: 12px; border: 1px solid var(--anat-line); border-radius: 10px; background: var(--anat-quiz-btn-bg); cursor: pointer; color: var(--anat-ink); transition: background 0.2s; }
+.anat-quiz-options button:hover { background: var(--anat-quiz-btn-hover); }
+.anat-drawer-backdrop { display: none; }
+
+/* ── Responsive ── */
+@media (max-width: 1350px) {
+  .anat-app-shell { padding: 16px; }
+  .anat-topbar { grid-template-columns: 1fr auto auto; gap: 12px; }
+  .anat-brand em { display: none; }
+  .anat-search-box { display: none; }
+  .anat-workspace { grid-template-columns: 250px minmax(500px,1fr) 300px; height: min(700px, calc(100vh - 105px)); }
+  .anat-learning-cards { grid-template-columns: repeat(3, 1fr); --art-max: 300px; }
+}
+
+@media (max-width: 1040px) {
+  .anat-topbar { grid-template-columns: 1fr auto auto; }
+  .anat-main-nav button span { display: none; }
+  .anat-main-nav button { padding: 10px; }
+  .anat-workspace { grid-template-columns: 210px minmax(450px,1fr); height: 690px; }
+  .anat-info-panel { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1.2fr; gap: 12px 22px; max-height: none; }
+  .anat-info-panel .anat-description, .anat-info-panel .anat-rule, .anat-info-panel h2, .anat-key-facts, .anat-medical-note { grid-column: 2; }
+  .anat-info-kicker, .anat-info-title-row { grid-column: 1; }
+  .anat-info-panel { height: 330px; }
+  .anat-workspace { height: auto; }
+  .anat-organ-library, .anat-viewer-shell { height: 650px; }
+}
+
+@media (max-width: 760px) {
+  .anat-app-shell { padding: 10px; overflow: hidden; }
+  .anat-topbar { height: 58px; grid-template-columns: 1fr auto auto; }
+  .anat-brand strong { font-size: 29px; }
+  .anat-main-nav { display: none; }
+  .anat-profile span { width: 34px; height: 34px; }
+  .anat-mobile-library-trigger { display: flex; }
+  .anat-workspace { display: block; margin-top: 8px; }
+  .anat-viewer-shell { height: 68vh; min-height: 520px; border-radius: 22px; }
+  .anat-organ-library {
+    position: fixed;
+    z-index: 42;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    height: min(76vh, 650px);
+    transform: translateY(110%);
+    border-radius: 26px;
+    background: var(--anat-drawer-bg);
+  }
+  .anat-organ-library.open { transform: translateY(0); }
+  .anat-panel-heading .anat-mobile-close { display: grid; margin-left: auto; margin-right: 7px; }
+  .anat-drawer-backdrop { display: block; position: fixed; inset: 0; z-index: 40; border: 0; background: var(--anat-modal-backdrop); backdrop-filter: blur(5px); }
+  .anat-organ-list { display: grid; grid-template-columns: 1fr 1fr; }
+  .anat-organ-item { min-height: 76px; }
+  .anat-info-panel { height: auto; margin-top: 10px; display: block; border-radius: 22px; }
+  .anat-learning-cards { grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; --art-max: 320px; }
+  .anat-learning-cards article { border-radius: 20px; }
+  .anat-curiosity-card { display: none !important; }
+  .anat-viewer-tools { top: auto; bottom: 12px; left: 10px; right: 10px; transform: none; width: auto; height: 61px; flex-direction: row; justify-content: space-around; padding: 4px; border-radius: 15px; }
+  .anat-tool-button { width: 51px; height: 51px; }
+  .anat-tool-button:nth-last-child(1) { border: 0; border-radius: 12px; }
+  .anat-tool-button span { display: none; }
+  .anat-auto-rotate { bottom: 82px; right: 10px; }
+  .anat-view-caption { left: 12px; bottom: 84px; }
+  .anat-tip-note { width: 130px; min-height: 113px; padding: 11px; }
+  .anat-tip-note p { font-size: 12px; }
+  .anat-callout-body { width: 148px; top: -26px; }
+  .anat-compare-strip { grid-template-columns: 1fr auto 1fr auto; }
+  .anat-compare-strip dl { display: none; }
+}
+
+@media (max-width: 470px) {
+  .anat-brand strong { font-size: 25px; }
+  .anat-viewer-shell { min-height: 485px; height: 66vh; }
+  .anat-organ-list { grid-template-columns: 1fr; }
+  .anat-learning-cards { grid-template-columns: 1fr; --art-max: 360px; }
+  .anat-organ-library .anat-view-all { margin-bottom: 8px; }
+  .anat-tip-note { display: none; }
+  .anat-specimen-stamp { width: 68px; height: 68px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anat-app-shell *, .anat-app-shell *:before, .anat-app-shell *:after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+}

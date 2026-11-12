@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TissueAI</title>
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #000000;
+        color: white;
+        overflow: hidden;
+      }
+      #root {
+        height: 100%;
+      }
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SPLASH SCREEN — Inline in <head> for instant render
+         ═══════════════════════════════════════════════════════════════ -->
+    <style id="splash-css">
+      #splash-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 999999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000000;
+        overflow: hidden;
+        font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif;
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      #splash-overlay.splash-exit {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ─── Aurora Orbs ─── */
+      .s-aurora { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+      .s-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        will-change: transform;
+      }
+      .s-orb-1 {
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(139,92,246,0.35) 0%, transparent 70%);
+        top: -15%; left: -10%;
+        animation: s-drift-1 12s ease-in-out infinite alternate;
+      }
+      .s-orb-2 {
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(236,72,153,0.3) 0%, transparent 70%);
+        bottom: -20%; right: -8%;
+        animation: s-drift-2 14s ease-in-out infinite alternate;
+      }
+      .s-orb-3 {
+        width: 450px; height: 450px;
+        background: radial-gradient(circle, rgba(91,168,245,0.25) 0%, transparent 70%);
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        animation: s-drift-3 10s ease-in-out infinite alternate;
+      }
+      .s-orb-4 {
+        width: 350px; height: 350px;
+        background: radial-gradient(circle, rgba(6,182,212,0.2) 0%, transparent 70%);
+        top: 20%; right: 25%;
+        animation: s-drift-4 16s ease-in-out infinite alternate;
+      }
+      @keyframes s-drift-1 { to { transform: translate(60px, 40px) scale(1.15); } }
+      @keyframes s-drift-2 { to { transform: translate(-50px, -30px) scale(1.1); } }
+      @keyframes s-drift-3 { to { transform: translate(calc(-50% + 30px), calc(-50% - 20px)) scale(1.08); } }
+      @keyframes s-drift-4 { to { transform: translate(-40px, 25px) scale(0.92); } }
+
+      /* ─── Particles ─── */
+      .s-particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+      .s-particle {
+        position: absolute;
+        border-radius: 50%;
+        bottom: -5%;
+        opacity: 0;
+        animation: s-pfloat linear infinite;
+      }
+      @keyframes s-pfloat {
+        0% { transform: translateY(0) scale(0); opacity: 0; }
+        8% { opacity: 0.8; transform: translateY(-8vh) scale(1); }
+        85% { opacity: 0.6; }
+        100% { transform: translateY(-105vh) scale(0.3); opacity: 0; }
+      }
+
+      /* ─── Content ─── */
+      .s-content {
+        position: relative; z-index: 10;
+        display: flex; flex-direction: column; align-items: center;
+        gap: 32px; padding: 40px; max-width: 480px; width: 100%;
+      }
+
+      /* Logo */
+      .s-logo { position: relative; width: 88px; height: 88px; display: flex; align-items: center; justify-content: center; }
+      .s-logo-glow {
+        position: absolute; inset: -20px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(192,132,252,0.3), rgba(236,72,153,0.15), transparent 70%);
+        filter: blur(25px);
+        animation: s-glow-pulse 3s ease-in-out infinite;
+      }
+      @keyframes s-glow-pulse { 0%,100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.12); } }
+      .s-logo-icon {
+        width: 88px; height: 88px;
+        animation: s-icon-breathe 3s ease-in-out infinite;
+      }
+      @keyframes s-icon-breathe {
+        0%,100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(192,132,252,0.3)); }
+        50% { transform: scale(1.04); filter: drop-shadow(0 0 35px rgba(192,132,252,0.5)); }
+      }
+
+      /* Branding */
+      .s-branding { text-align: center; animation: s-fade-up 0.8s cubic-bezier(0.16,1,0.3,1) both; animation-delay: 0.1s; }
+      .s-title {
+        font-size: 32px; font-weight: 700; letter-spacing: -0.03em; color: rgba(255,255,255,0.95);
+        margin: 0; line-height: 1.1;
+        background: linear-gradient(135deg, #e2e8f0, #c084fc 40%, #ec4899 70%, #5BA8F5);
+        background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      }
+      .s-subtitle-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 8px; }
+      .s-subtitle { font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
+      .s-version {
+        font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 9999px;
+        background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+        color: rgba(255,255,255,0.3); font-family: 'JetBrains Mono', monospace;
+      }
+
+      /* Bento Grid */
+      .s-bento { width: 100%; display: flex; flex-direction: column; gap: 12px; animation: s-fade-up 0.8s cubic-bezier(0.16,1,0.3,1) both; animation-delay: 0.25s; }
+      .s-card {
+        position: relative; border-radius: 16px; padding: 16px 20px;
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(24px) saturate(1.4); -webkit-backdrop-filter: blur(24px) saturate(1.4);
+        border: 1px solid rgba(255,255,255,0.06); overflow: hidden;
+      }
+      .s-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(192,132,252,0.15), rgba(236,72,153,0.1), transparent);
+        pointer-events: none;
+      }
+      .s-card-main { text-align: center; }
+      .s-card-glow { position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(ellipse at 50% 0%, rgba(192,132,252,0.06) 0%, transparent 60%); pointer-events: none; }
+      .s-card-header { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px; }
+      .s-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+      .s-dot-active { background: #c084fc; box-shadow: 0 0 10px rgba(192,132,252,0.5); animation: s-dot-pulse 1.5s ease-in-out infinite; }
+      .s-dot-done { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.4); }
+      @keyframes s-dot-pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
+      .s-label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); letter-spacing: 0.02em; }
+      .s-detail { font-size: 12px; color: rgba(255,255,255,0.35); margin: 0; font-family: 'JetBrains Mono', monospace; }
+
+      /* Metrics */
+      .s-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .s-metric { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 8px; }
+      .s-metric-val { font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.9); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
+      .s-metric-lbl { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.25); }
+
+      /* Progress */
+      .s-progress { width: 100%; display: flex; flex-direction: column; gap: 10px; animation: s-fade-up 0.8s cubic-bezier(0.16,1,0.3,1) both; animation-delay: 0.4s; }
+      .s-track { width: 100%; height: 4px; border-radius: 9999px; background: rgba(255,255,255,0.05); overflow: hidden; position: relative; }
+      .s-fill {
+        height: 100%; border-radius: 9999px;
+        background: linear-gradient(90deg, #c084fc, #ec4899, #5BA8F5);
+        position: relative;
+      }
+      .s-fill-glow {
+        position: absolute; top: -4px; right: -2px; width: 16px; height: 12px;
+        border-radius: 50%; background: rgba(192,132,252,0.6); filter: blur(6px);
+        animation: s-gp-pulse 1.5s ease-in-out infinite;
+      }
+      @keyframes s-gp-pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+      .s-fill::after {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+        background: linear-gradient(180deg, rgba(255,255,255,0.25), transparent);
+        border-radius: 9999px 9999px 0 0;
+      }
+      .s-progress-info { display: flex; justify-content: space-between; align-items: center; }
+      .s-step-text { font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'JetBrains Mono', monospace; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .s-pct { font-size: 12px; font-weight: 600; color: rgba(192,132,252,0.7); font-family: 'JetBrains Mono', monospace; flex-shrink: 0; margin-left: 12px; }
+
+      /* Timeline */
+      .s-timeline { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 420px; animation: s-fade-up 0.8s cubic-bezier(0.16,1,0.3,1) both; animation-delay: 0.55s; }
+      .s-tl-item { display: flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 9999px; font-size: 10px; font-weight: 500; transition: all 0.4s ease; }
+      .s-tl-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; transition: all 0.4s ease; }
+      .s-tl-done { background: rgba(34,197,94,0.08); color: rgba(34,197,94,0.7); }
+      .s-tl-done .s-tl-dot { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.4); }
+      .s-tl-active { background: rgba(192,132,252,0.1); color: rgba(192,132,252,0.9); }
+      .s-tl-active .s-tl-dot { background: #c084fc; box-shadow: 0 0 8px rgba(192,132,252,0.5); animation: s-dot-pulse 1.2s ease-in-out infinite; }
+      .s-tl-pending { background: transparent; color: rgba(255,255,255,0.15); }
+      .s-tl-pending .s-tl-dot { background: rgba(255,255,255,0.1); }
+
+      @keyframes s-fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+  </head>
+  <body>
+    <!-- ═══ Static Splash — renders instantly, zero JS dependency ═══ -->
+    <div id="splash-overlay">
+      <div class="s-aurora">
+        <div class="s-orb s-orb-1"></div>
+        <div class="s-orb s-orb-2"></div>
+        <div class="s-orb s-orb-3"></div>
+        <div class="s-orb s-orb-4"></div>
+      </div>
+
+      <div class="s-particles" id="splash-particles"></div>
+
+      <div class="s-content">
+        <!-- Logo -->
+        <div class="s-logo">
+          <div class="s-logo-glow"></div>
+          <div class="s-logo-icon">
+            <img src="/logo.png" alt="TissueAI Logo" style="width:100%;height:100%;object-fit:cover;border-radius:18px;filter:drop-shadow(0 4px 16px rgba(91,168,245,0.4));" />
+          </div>
+        </div>
+
+        <!-- Branding -->
+        <div class="s-branding">
+          <h1 class="s-title">TissueAI</h1>
+          <div class="s-subtitle-row">
+            <span class="s-subtitle">Histopathology Intelligence</span>
+            <span class="s-version">v0.1.0</span>
+          </div>
+        </div>
+
+        <!-- Bento Status -->
+        <div class="s-bento">
+          <div class="s-card s-card-main">
+            <div class="s-card-glow"></div>
+            <div class="s-card-header">
+              <div class="s-dot s-dot-active" id="s-dot"></div>
+              <span class="s-label" id="s-label">Initializing</span>
+            </div>
+            <p class="s-detail" id="s-detail">Preparing application environment</p>
+          </div>
+          <div class="s-metrics">
+            <div class="s-card s-metric">
+              <span class="s-metric-val" id="s-pct-val">0%</span>
+              <span class="s-metric-lbl">Progress</span>
+            </div>
+            <div class="s-card s-metric">
+              <span class="s-metric-val" id="s-step-val">0/13</span>
+              <span class="s-metric-lbl">Steps</span>
+            </div>
+            <div class="s-card s-metric">
+              <span class="s-metric-val" id="s-time-val">0.0s</span>
+              <span class="s-metric-lbl">Elapsed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="s-progress">
+          <div class="s-track">
+            <div class="s-fill" id="s-fill" style="width:0%">
+              <div class="s-fill-glow"></div>
+            </div>
+          </div>
+          <div class="s-progress-info">
+            <span class="s-step-text" id="s-step-text">Preparing application environment</span>
+            <span class="s-pct" id="s-pct">0%</span>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="s-timeline" id="s-timeline"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Splash Animation Engine — vanilla JS, runs instantly ═══ -->
+    <script>
+      (function() {
+        var STEPS = [
+          { label: 'Runtime',    detail: 'Initializing WebView2 runtime',      dur: 400 },
+          { label: 'IPC Bridge', detail: 'Establishing Tauri IPC channel',     dur: 350 },
+          { label: 'Frontend',   detail: 'Hydrating React component tree',     dur: 500 },
+          { label: 'Theme',      detail: 'Loading theme configuration',        dur: 250 },
+          { label: 'Filesystem', detail: 'Verifying filesystem access',        dur: 400 },
+          { label: 'Models',     detail: 'Scanning AI model directory',        dur: 700 },
+          { label: 'Plugins',    detail: 'Initializing Tauri plugin system',   dur: 350 },
+          { label: 'Config',     detail: 'Reading application configuration',  dur: 300 },
+          { label: 'Providers',  detail: 'Loading LLM provider registry',      dur: 450 },
+          { label: 'Services',   detail: 'Starting background services',       dur: 400 },
+          { label: 'Cache',      detail: 'Warming up analysis cache',          dur: 300 },
+          { label: 'Interface',  detail: 'Rendering main interface',           dur: 350 },
+          { label: 'Ready',      detail: 'All systems operational',            dur: 0   }
+        ];
+
+        var TOTAL = 0;
+        for (var i = 0; i < STEPS.length; i++) TOTAL += STEPS[i].dur;
+
+        // Build timeline pills
+        var tlEl = document.getElementById('s-timeline');
+        if (tlEl) {
+          var tlHTML = '';
+          for (var i = 0; i < STEPS.length; i++) {
+            var cls = i === 0 ? 's-tl-active' : 's-tl-pending';
+            tlHTML += '<div class="s-tl-item ' + cls + '" id="s-tl-' + i + '">'
+              + '<div class="s-tl-dot"></div>'
+              + '<span>' + STEPS[i].label + '</span></div>';
+          }
+          tlEl.innerHTML = tlHTML;
+        }
+
+        // Build particles
+        var pEl = document.getElementById('splash-particles');
+        if (pEl) {
+          var pHTML = '';
+          var colors = ['rgba(139,92,246,0.6)', 'rgba(91,168,245,0.5)', 'rgba(236,72,153,0.5)', 'rgba(6,182,212,0.4)'];
+          for (var j = 0; j < 24; j++) {
+            var sz = 1.5 + (j % 4) * 0.8;
+            var lft = ((j * 37 + 13) % 100);
+            var del = (j * 0.7) % 8;
+            var pdur = 7 + (j % 5) * 2;
+            pHTML += '<div class="s-particle" style="width:'+sz+'px;height:'+sz+'px;left:'+lft+'%;background:'+colors[j%4]+';animation-duration:'+pdur+'s;animation-delay:'+del+'s"></div>';
+          }
+          pEl.innerHTML = pHTML;
+        }
+
+        // Cache DOM refs
+        var dot = document.getElementById('s-dot');
+        var labelEl = document.getElementById('s-label');
+        var detailEl = document.getElementById('s-detail');
+        var fill = document.getElementById('s-fill');
+        var pctVal = document.getElementById('s-pct-val');
+        var stepVal = document.getElementById('s-step-val');
+        var timeVal = document.getElementById('s-time-val');
+        var stepText = document.getElementById('s-step-text');
+        var pctEl = document.getElementById('s-pct');
+
+        var startTime = Date.now();
+        var done = false;
+
+        function tick() {
+          if (done) return;
+          var elapsed = Date.now() - startTime;
+
+          if (elapsed >= TOTAL) {
+            elapsed = TOTAL;
+            done = true;
+          }
+
+          var pct = Math.min(Math.round((elapsed / TOTAL) * 100), 100);
+
+          // Find current step
+          var acc = 0;
+          var si = STEPS.length - 1;
+          for (var k = 0; k < STEPS.length; k++) {
+            acc += STEPS[k].dur;
+            if (elapsed <= acc) { si = k; break; }
+          }
+
+          // Update DOM
+          fill.style.width = pct + '%';
+          pctVal.textContent = pct + '%';
+          stepVal.textContent = (si + 1) + '/' + STEPS.length;
+          timeVal.textContent = (elapsed / 1000).toFixed(1) + 's';
+          labelEl.textContent = STEPS[si].label;
+          detailEl.textContent = STEPS[si].detail;
+          stepText.textContent = done ? 'Launch complete' : STEPS[si].detail;
+          pctEl.textContent = pct + '%';
+
+          // Update timeline
+          for (var m = 0; m < STEPS.length; m++) {
+            var el = document.getElementById('s-tl-' + m);
+            if (!el) continue;
+            el.className = 's-tl-item ' + (m < si ? 's-tl-done' : m === si ? 's-tl-active' : 's-tl-pending');
+          }
+
+          // Done
+          if (done) {
+            dot.className = 's-dot s-dot-done';
+            return;
+          }
+          setTimeout(tick, 16);
+        }
+
+        // Start immediately
+        tick();
+
+        // Expose exit function for React
+        window.__splashExit = function(onDone) {
+          var overlay = document.getElementById('splash-overlay');
+          if (!overlay) { if (onDone) onDone(); return; }
+          overlay.classList.add('splash-exit');
+          setTimeout(function() {
+            overlay.remove();
+            var css = document.getElementById('splash-css');
+            if (css) css.remove();
+            if (onDone) onDone();
+          }, 500);
+        };
+      })();
+    </script>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

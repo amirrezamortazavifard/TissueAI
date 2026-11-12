@@ -1,0 +1,382 @@
+/* ═══════════════════════════════════════════════════════
+   JAN AI STYLE 3-COLUMN CHAT INTERFACE CSS
+   Pixel-perfect matching Jan.ai Desktop interface
+   ═══════════════════════════════════════════════════════ */
+
+.jan-chat-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-0, #090d16);
+  color: var(--text-1, #f8fafc);
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  z-index: 5;
+}
+
+/* Light Mode Overrides */
+[data-theme="light"] .jan-chat-container {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+/* ── CENTER CHAT MAIN CANVAS ────────────────────────── */
+.jan-chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  background: var(--bg-1, #0f172a);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="light"] .jan-chat-main {
+  background: #ffffff;
+}
+
+.jan-main-header {
+  height: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border-2, rgba(255, 255, 255, 0.08));
+  background: var(--surface-elevated, #1e293b);
+  z-index: 10;
+}
+
+[data-theme="light"] .jan-main-header {
+  background: #f8fafc;
+  border-bottom-color: #e2e8f0;
+}
+
+.jan-message-stream {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+}
+
+.jan-msg-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.jan-msg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.jan-msg-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1, #f8fafc);
+}
+
+[data-theme="light"] .jan-msg-author {
+  color: #0f172a;
+}
+
+.jan-msg-time {
+  font-size: 11px;
+  color: var(--text-3, #64748b);
+}
+
+.jan-token-speed {
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--text-3, #94a3b8);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.jan-msg-body {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-1, #e2e8f0);
+  background: var(--bg-2, #1e293b);
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-2, rgba(255, 255, 255, 0.08));
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+[data-theme="light"] .jan-msg-body {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+/* Bottom Metrics Bar */
+.jan-footer-status {
+  height: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-top: 1px solid var(--border-2, rgba(255, 255, 255, 0.08));
+  background: var(--bg-0, #090d16);
+  font-size: 11px;
+  color: var(--text-3, #94a3b8);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+[data-theme="light"] .jan-footer-status {
+  background: #f8fafc;
+  border-top-color: #e2e8f0;
+  color: #64748b;
+}
+
+/* ── RIGHT INSPECTOR / SETTINGS PANEL ──────────────── */
+.jan-inspector-panel {
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
+  height: 100%;
+  border-left: 1px solid var(--border-2, rgba(255, 255, 255, 0.1));
+  background: var(--surface-elevated, #0f172a);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 12px;
+  gap: 8px;
+  z-index: 15;
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .jan-inspector-panel {
+  background: #ffffff;
+  border-left-color: #e2e8f0;
+}
+
+.jan-accordion-card {
+  border: 1px solid var(--border-2, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  background: var(--bg-2, #1e293b);
+  overflow: hidden;
+}
+
+[data-theme="light"] .jan-accordion-card {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.jan-accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  user-select: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-1, #f8fafc);
+}
+
+[data-theme="light"] .jan-accordion-header {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.jan-accordion-body {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border-2, rgba(255, 255, 255, 0.06));
+}
+
+[data-theme="light"] .jan-accordion-body {
+  border-top-color: #e2e8f0;
+}
+
+.jan-field-label {
+  font-size: 11px;
+  color: var(--text-3, #94a3b8);
+  font-weight: 500;
+}
+
+.jan-input-text, .jan-textarea {
+  width: 100%;
+  background: #090d16;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #f8fafc;
+  outline: none;
+}
+
+[data-theme="light"] .jan-input-text, [data-theme="light"] .jan-textarea {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.jan-textarea {
+  min-height: 54px;
+  resize: vertical;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   GLASSMORPHISM & LAYOUT FIXES
+   ═══════════════════════════════════════════════════════ */
+
+/* Main chat background should be fully transparent to show liquid blob */
+.jan-chat-main {
+  background: transparent !important;
+}
+.jan-chat-container {
+  background: transparent !important;
+}
+[data-theme="light"] .jan-chat-main {
+  background: transparent !important;
+}
+
+/* Glassmorphism for Left Sidebar (chat-sidebar-panel) */
+.chat-sidebar-panel {
+  background: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+  z-index: 50 !important;
+  transition: width 0.25s ease, transform 0.25s ease, opacity 0.2s ease !important;
+}
+
+[data-theme="light"] .chat-sidebar-panel {
+  background: rgba(255, 255, 255, 0.6) !important;
+  border-right-color: rgba(203, 213, 225, 0.5) !important;
+}
+
+/* Perfect Collapse & Expand states for Shadcn Sidebar */
+[data-state="collapsed"] .chat-sidebar-panel,
+.chat-sidebar-panel[data-state="collapsed"],
+[data-collapsible="offcanvas"][data-state="collapsed"] .chat-sidebar-panel,
+div[data-sidebar="sidebar"][data-state="collapsed"] {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: translateX(-100%) !important;
+}
+
+[data-state="expanded"] .chat-sidebar-panel,
+.chat-sidebar-panel[data-state="expanded"],
+div[data-sidebar="sidebar"][data-state="expanded"] {
+  width: 260px !important;
+  min-width: 260px !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: translateX(0) !important;
+}
+
+/* Glassmorphism for Chat Input (Composer) */
+.sd-composer-enter {
+  position: relative !important;
+  z-index: 30 !important;
+  margin-bottom: 2px !important;
+}
+
+.sd-composer-enter > div,
+.chat-input-container {
+  background: rgba(15, 23, 42, 0.55) !important;
+  backdrop-filter: blur(24px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  border-radius: 16px !important;
+}
+
+[data-theme="light"] .sd-composer-enter > div,
+[data-theme="light"] .chat-input-container {
+  background: rgba(255, 255, 255, 0.65) !important;
+  border-color: rgba(203, 213, 225, 0.6) !important;
+  box-shadow: 0 8px 32px 0 rgba(148, 163, 184, 0.2) !important;
+}
+
+/* Glassmorphism for Inspector Panel */
+.jan-inspector-panel {
+  background: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+  overflow-y: auto !important;
+  max-height: 100% !important;
+  padding-bottom: 90px !important;
+  scroll-behavior: smooth;
+}
+
+[data-theme="light"] .jan-inspector-panel {
+  background: rgba(255, 255, 255, 0.6) !important;
+  border-left-color: rgba(203, 213, 225, 0.5) !important;
+}
+
+/* Custom Scrollbar for Right Inspector Panel */
+.jan-inspector-panel::-webkit-scrollbar {
+  width: 6px;
+}
+.jan-inspector-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.jan-inspector-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+}
+.jan-inspector-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+[data-theme="light"] .jan-inspector-panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Elevate Main Chat & Left Sidebar content above BottomDock (~60px height) */
+.jan-chat-main {
+  padding-bottom: 60px !important;
+}
+
+.chat-sidebar-panel {
+  padding-bottom: 75px !important;
+}
+
+/* Glassmorphism for Message Bubbles */
+.jan-msg-body {
+  background: rgba(30, 41, 59, 0.4) !important;
+  backdrop-filter: blur(12px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(150%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="light"] .jan-msg-body {
+  background: rgba(241, 245, 249, 0.6) !important;
+  border-color: rgba(203, 213, 225, 0.5) !important;
+}

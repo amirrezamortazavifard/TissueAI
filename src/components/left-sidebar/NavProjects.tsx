@@ -1,0 +1,183 @@
+import {
+  FolderEditIcon,
+  FolderIcon,
+  FolderOpenIcon,
+  MoreHorizontal,
+  Trash2,
+} from "lucide-react"
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar"
+import { useThreadManagement } from "@/hooks/useThreadManagement"
+import { Link, useNavigate } from "react-router-dom"
+
+
+import { useEffect, useRef, useState } from "react"
+import { useTranslation } from '@/i18n/react-i18next-compat'
+import { useNavSectionFocus } from "@/stores/nav-section-focus-store"
+import { cn } from "@/lib/utils"
+import type { ThreadFolder } from "@/services/projects/types"
+import AddProjectDialog from "@/containers/dialogs/AddProjectDialog"
+import { DeleteProjectDialog } from "@/containers/dialogs/DeleteProjectDialog"
+
+function ProjectItem({
+  item,
+  isMobile,
+  onEdit,
+  onDelete,
+}: {
+  item: ThreadFolder
+  isMobile: boolean
+  onEdit: (project: ThreadFolder) => void
+  onDelete: (project: ThreadFolder) => void
+}) {
+
+  const navigate = useNavigate()
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton asChild>
+        <Link
+          to={`/project/${item.id}`}
+        >
+          <FolderIcon  className="text-foreground/70" size={16} />
+          <span>{item.name}</span>
+        </Link>
+      </SidebarMenuButton>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <SidebarMenuAction showOnHover className="hover:bg-sidebar-foreground/[0.08] transition-colors duration-200">
+            <MoreHorizontal />
+            <span className="sr-only">More</span>
+          </SidebarMenuAction>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          className="w-48"
+          side={isMobile ? "bottom" : "right"}
+          align={isMobile ? "end" : "start"}
+        >
+          <DropdownMenuItem onSelect={() => {
+            navigate(`/project/${item.id}`)
+          }}>
+            <FolderOpenIcon className="text-muted-foreground" />
+            <span>View Project</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => onEdit(item)}>
+            <FolderEditIcon className="text-muted-foreground" />
+            <span>Edit Project</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem variant="destructive" onSelect={() => onDelete(item)}>
+            <Trash2 />
+            <span>Delete Project</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </SidebarMenuItem>
+  )
+}
+
+export function NavProjects() {
+  const { t } = useTranslation()
+  const { isMobile } = useSidebar()
+  const { folders, updateFolder } = useThreadManagement()
+
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [selectedProject, setSelectedProject] = useState<ThreadFolder | null>(null)
+  const groupRef = useRef<HTMLDivElement>(null)
+  const [flash, setFlash] = useState(false)
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return useNavSectionFocus.subscribe((state) => {
+      if (state.section === 'projects') {
+        setFlash(true)
+        groupRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        })
+        if (flashTimer.current) clearTimeout(flashTimer.current)
+        flashTimer.current = setTimeout(() => setFlash(false), 1600)
+      }
+    })
+  }, [])
+
+  const handleEdit = (project: ThreadFolder) => {
+    setSelectedProject(project)
+    setEditDialogOpen(true)
+  }
+
+  const handleDelete = (project: ThreadFolder) => {
+    setSelectedProject(project)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleSaveEdit = async (name: string, assistantId?: string) => {
+    if (selectedProject) {
+      await updateFolder(selectedProject.id, name, assistantId)
+      setEditDialogOpen(false)
+      setSelectedProject(null)
+    }
+  }
+
+  if (folders.length === 0) {
+    return null
+  }
+
+  return (
+    <>
+      <SidebarGroup
+        ref={groupRef}
+        className={cn(
+          'group-data-[collapsible=icon]:hidden transition-shadow rounded-lg',
+          flash && 'ring-1 ring-primary/60 shadow-lg shadow-primary/10'
+        )}
+      >
+        <SidebarGroupLabel className="sidebar-section-label">
+          {t('common:projects.title')}
+        </SidebarGroupLabel>
+        <SidebarMenu>
+          {folders.map((item) => (
+            <ProjectItem
+              key={item.id}
+              item={item}
+              isMobile={isMobile}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          ))}
+        </SidebarMenu>
+      </SidebarGroup>
+
+      <AddProjectDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        editingKey={selectedProject?.id ?? null}
+        initialData={selectedProject ?? undefined}
+        onSave={handleSaveEdit}
+      />
+
+      <DeleteProjectDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        projectId={selectedProject?.id}
+        projectName={selectedProject?.name}
+      />
+    </>
+  )
+}

@@ -1,5 +1,5 @@
 /**
- * Whole Slide Imaging (WSI) types matching backend Rust WSI module (options.md Section 27)
+ * Whole Slide Imaging (WSI) types matching backend Rust WSI module (options.md Section 27, M2-01, M2-03, M2-06)
  */
 
 export interface PyramidLevel {
@@ -24,6 +24,9 @@ export interface WsiMetadata {
   mpp_y: number;
   magnification: number;
   channel_count: number;
+  is_calibrated: boolean;
+  is_pyramidal: boolean;
+  raw_tags?: Record<string, string>;
   levels: PyramidLevel[];
 }
 
@@ -42,3 +45,10 @@ export interface TileRequest {
   priority: number;
 }
 
+export interface TileCacheStats {
+  current_bytes: number;
+  max_bytes: number;
+  entry_count: number;
+  hit_count: number;
+  miss_count: number;
+}

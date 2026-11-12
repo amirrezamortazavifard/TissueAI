@@ -2,8 +2,11 @@ pub mod cache;
 pub mod reader;
 pub mod scheduler;
 
-pub use cache::{TileCache, TileKey};
-pub use reader::{PyramidLevel, PyramidalSlideReader, WsiMetadata, WsiReader};
+pub use cache::{TileCache, TileCacheStats, TileKey};
+pub use reader::{
+    build_pyramid_levels, open_slide_auto, PyramidLevel, PyramidalSlideReader,
+    StandardRasterReader, WsiMetadata, WsiReader,
+};
 pub use scheduler::{TileRequest, TileScheduler, ViewportState};
 
 use std::collections::HashMap;
@@ -49,5 +52,9 @@ impl WsiSessionRegistry {
             false
         }
     }
-}
 
+    pub fn list_active_slides(&self) -> Vec<WsiMetadata> {
+        let map = self.readers.lock().unwrap_or_else(|e| e.into_inner());
+        map.values().map(|r| r.metadata().clone()).collect()
+    }
+}

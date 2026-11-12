@@ -65,6 +65,7 @@ use commands::scientific_image::{
 use commands::wsi::{
     WsiState, wsi_open_slide, wsi_get_slide_info, wsi_get_tile,
     wsi_get_thumbnail, wsi_compute_visible_tiles, wsi_read_region, wsi_close_slide,
+    wsi_get_cache_stats,
 };
 use commands::roi::{
     RoiState, roi_add, roi_list, roi_update, roi_delete, roi_clear,
@@ -950,6 +951,7 @@ pub fn run() {
             wsi_compute_visible_tiles,
             wsi_read_region,
             wsi_close_slide,
+            wsi_get_cache_stats,
             // ROI Manager & Quantitative Measurements (Phase 3)
             roi_add,
             roi_list,

@@ -1,5 +1,6 @@
+use std::io::Write;
 use tissueai_lib::wsi::{
-    PyramidLevel, TileCache, TileKey, TileScheduler, ViewportState,
+    open_slide_auto, PyramidLevel, TileCache, TileKey, TileScheduler, ViewportState,
 };
 
 #[test]
@@ -29,6 +30,12 @@ fn test_tile_cache_lru_and_eviction() {
     cache.insert(key2.clone(), data2.clone());
 
     assert!(cache.get(&key2).is_some());
+
+    // Cache statistics check (M2-06)
+    let stats = cache.get_stats();
+    assert_eq!(stats.entry_count, 1);
+    assert!(stats.current_bytes <= 1024 * 1024);
+    assert_eq!(stats.hit_count, 2);
 }
 
 #[test]
@@ -99,16 +106,56 @@ fn test_tile_scheduler_screen_to_slide_coordinates() {
         viewport_height: 800,
     };
 
-    // Center of screen (500, 400) should map to center of slide (5000, 5000)
+    // Center of screen (500, 400) must map exactly to center of viewport (5000, 5000)
     let (cx, cy) = TileScheduler::screen_to_slide(500.0, 400.0, &vp);
     assert!((cx - 5000.0).abs() < 1e-4);
     assert!((cy - 5000.0).abs() < 1e-4);
 
-    // Top-left screen (0, 0)
-    // dx = -500, at zoom 0.5 -> delta_slide = -1000 -> slide_x = 4000
-    // dy = -400, at zoom 0.5 -> delta_slide = -800 -> slide_y = 4200
+    // Top-left corner of screen (0, 0)
     let (tl_x, tl_y) = TileScheduler::screen_to_slide(0.0, 0.0, &vp);
+    // At zoom 0.5: delta 500px screen = 1000px slide -> 5000 - 1000 = 4000
     assert!((tl_x - 4000.0).abs() < 1e-4);
+    // Delta 400px screen = 800px slide -> 5000 - 800 = 4200
     assert!((tl_y - 4200.0).abs() < 1e-4);
 }
 
+#[test]
+fn test_wsi_raster_reader_separation_and_uncalibrated_mpp() {
+    // Create synthetic test PNG image (512x512)
+    let mut file = tempfile::Builder::new()
+        .suffix(".png")
+        .tempfile()
+        .expect("Failed to create temp file");
+    let img = image::RgbImage::from_fn(512, 512, |x, y| {
+        image::Rgb([(x % 256) as u8, (y % 256) as u8, 128])
+    });
+
+    let mut png_bytes = Vec::new();
+    let mut cursor = std::io::Cursor::new(&mut png_bytes);
+    img.write_to(&mut cursor, image::ImageFormat::Png)
+        .expect("Encode PNG");
+    file.write_all(&png_bytes).expect("Write PNG");
+
+    // Open via open_slide_auto
+    let reader = open_slide_auto(file.path().to_str().unwrap(), 256).expect("Open slide");
+    let meta = reader.metadata();
+
+    assert_eq!(meta.level_0_width, 512);
+    assert_eq!(meta.level_0_height, 512);
+    // Standard raster images must NOT invent 0.25 µm/px or 40x magnification! (FIND-002 check)
+    assert_eq!(meta.mpp_x, 0.0);
+    assert_eq!(meta.mpp_y, 0.0);
+    assert_eq!(meta.magnification, 0.0);
+    assert!(!meta.is_calibrated);
+    assert!(!meta.is_pyramidal);
+
+    // Read tile (0, 0)
+    let tile_bytes = reader.read_tile(0, 0, 0).expect("Read tile 0,0");
+    assert!(!tile_bytes.is_empty());
+    assert_eq!(tile_bytes[0], 0xFF); // JPEG marker SOI
+    assert_eq!(tile_bytes[1], 0xD8);
+
+    // Thumbnail read
+    let thumb_bytes = reader.get_thumbnail(128).expect("Get thumbnail");
+    assert!(!thumb_bytes.is_empty());
+}

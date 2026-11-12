@@ -3,8 +3,8 @@ use std::sync::Arc;
 use tauri::State;
 
 use crate::wsi::{
-    PyramidalSlideReader, TileKey, TileRequest, TileScheduler, ViewportState,
-    WsiMetadata, WsiReader, WsiSessionRegistry,
+    open_slide_auto, TileCacheStats, TileKey, TileRequest, TileScheduler, ViewportState,
+    WsiMetadata, WsiSessionRegistry,
 };
 
 #[derive(Default)]
@@ -19,9 +19,9 @@ pub fn wsi_open_slide(
     state: State<'_, WsiState>,
 ) -> Result<WsiMetadata, String> {
     let size = tile_size.unwrap_or(256).clamp(128, 1024);
-    let reader = PyramidalSlideReader::open(&path, size)?;
+    let reader = open_slide_auto(&path, size)?;
     let metadata = reader.metadata().clone();
-    state.registry.register(Arc::new(reader));
+    state.registry.register(reader);
     Ok(metadata)
 }
 
@@ -133,4 +133,9 @@ pub fn wsi_read_region(
 #[tauri::command]
 pub fn wsi_close_slide(slide_id: String, state: State<'_, WsiState>) -> Result<bool, String> {
     Ok(state.registry.remove(&slide_id))
+}
+
+#[tauri::command]
+pub fn wsi_get_cache_stats(state: State<'_, WsiState>) -> Result<TileCacheStats, String> {
+    Ok(state.registry.cache().get_stats())
 }

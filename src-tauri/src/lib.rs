@@ -7,6 +7,7 @@ pub mod scientific_models;
 pub mod wsi;
 pub mod roi;
 pub mod project;
+pub mod histology;
 pub mod image_processing;
 pub mod ai_segmentation;
 pub mod registration;
@@ -76,6 +77,9 @@ use commands::roi::{
 use commands::project::{
     ProjectState, project_create, project_open, project_save,
     project_get_current, project_add_image,
+};
+use commands::histology::{
+    histo_detect_tissue, histo_deconvolve, histo_extract_morphometry,
 };
 use commands::image_processing::{
     proc_apply_filter, proc_apply_adjustments, proc_distance_transform,
@@ -978,6 +982,10 @@ pub fn run() {
             project_save,
             project_get_current,
             project_add_image,
+            // Histology & Stain Deconvolution (Phase 6 M6)
+            histo_detect_tissue,
+            histo_deconvolve,
+            histo_extract_morphometry,
             // Image Processing & Scientific Filters (Phase 4)
             proc_apply_filter,
             proc_apply_adjustments,

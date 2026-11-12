@@ -10,6 +10,7 @@ pub mod scientific_image;
 pub mod wsi;
 pub mod roi;
 pub mod project;
+pub mod histology;
 pub mod image_processing;
 pub mod ai_segmentation;
 pub mod registration;

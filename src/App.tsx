@@ -20,6 +20,8 @@ const ColorAnalysis = lazy(() => import("./components/tools/ColorAnalysis"));
 const Editor = lazy(() => import("./components/tools/Editor"));
 const ThreeViewer = lazy(() => import("./components/tools/ThreeViewer/ThreeViewer"));
 const Segmentation = lazy(() => import("./components/tools/Segmentation"));
+const SpatialAnalysis = lazy(() => import("./components/tools/SpatialAnalysis"));
+const Morphometry = lazy(() => import("./components/tools/Morphometry"));
 const AgentWorkspace = lazy(() => import("./components/tools/agent-workspace/index.tsx"));
 const AnatomyApp = lazy(() => import("./components/anatomy/AnatomyApp").then(m => ({ default: m.AnatomyApp })));
 const LlmModelsPage = lazy(() => import("./pages/llm/ModelsPage"));
@@ -189,6 +191,22 @@ function App() {
           element={
             <Suspense fallback={<PageLoader />}>
               <Segmentation />
+            </Suspense>
+          }
+        />
+        <Route
+          path="spatial-analysis"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <SpatialAnalysis />
+            </Suspense>
+          }
+        />
+        <Route
+          path="morphometry"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <Morphometry />
             </Suspense>
           }
         />

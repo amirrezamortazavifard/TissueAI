@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Microscope, Layers, Palette, BrainCircuit, Brain, Beaker, Heart,
-  Cpu, HardDrive, Activity, Zap, ArrowUpRight
+  Cpu, HardDrive, Activity, Zap, ArrowUpRight, Compass, Network
 } from "lucide-react";
 import Logo from "../ui/Logo";
 
@@ -102,6 +102,24 @@ export default function Home() {
       iconColor: "text-orange-400",
       path: "/anatomy",
       badge: "3D Atlas",
+    },
+    {
+      title: "Spatial Analysis & Registration",
+      desc: "Colocalization (PCC/Manders), directionality & affine alignment",
+      icon: <Compass size={20} />,
+      iconBg: "bg-indigo-500/10 border-indigo-500/20",
+      iconColor: "text-indigo-400",
+      path: "/spatial-analysis",
+      badge: "Coloc & Reg",
+    },
+    {
+      title: "Morphometry & Research Reports",
+      desc: "Skeleton branch graph, watershed & automated macro reporting",
+      icon: <Network size={20} />,
+      iconBg: "bg-teal-500/10 border-teal-500/20",
+      iconColor: "text-teal-400",
+      path: "/morphometry",
+      badge: "Skeleton & Rep",
     },
   ];
 

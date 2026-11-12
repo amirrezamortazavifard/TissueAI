@@ -33,12 +33,53 @@ impl MeasurementEngine {
     ) -> RoiMeasurements {
         let metrics = GeometryEngine::compute_shape_metrics(shape);
 
-        let area_phys = calibration.calculate_calibrated_area(metrics.area_px);
-        let perim_phys = metrics.perimeter_px * calibration.pixel_size_x;
-        let feret_max_phys = metrics.feret_max_px * calibration.pixel_size_x;
-        let feret_min_phys = metrics.feret_min_px * calibration.pixel_size_x;
+        // If uncalibrated, physical values remain 0 / uncalibrated
+        let (area_phys, perim_phys, feret_max_phys, feret_min_phys, cx_phys, cy_phys) = if calibration.is_calibrated {
+            let area = calibration.calculate_calibrated_area(metrics.area_px);
+            
+            // Calculate true anisotropic perimeter based on shape type
+            let perim = match shape {
+                RoiShape::Rectangle { width, height, .. } => {
+                    2.0 * (width * calibration.pixel_size_x + height * calibration.pixel_size_y)
+                }
+                RoiShape::Ellipse { radius_x, radius_y, .. } => {
+                    let a = radius_x * calibration.pixel_size_x;
+                    let b = radius_y * calibration.pixel_size_y;
+                    // Ramanujan approximation for ellipse perimeter
+                    let h = ((a - b) * (a - b)) / ((a + b) * (a + b));
+                    std::f64::consts::PI * (a + b) * (1.0 + (3.0 * h) / (10.0 + (4.0 - 3.0 * h).sqrt()))
+                }
+                RoiShape::Polygon { points } => {
+                    let n = points.len();
+                    let mut p = 0.0;
+                    for i in 0..n {
+                        let j = (i + 1) % n;
+                        let dx = (points[j].x - points[i].x) * calibration.pixel_size_x;
+                        let dy = (points[j].y - points[i].y) * calibration.pixel_size_y;
+                        p += (dx * dx + dy * dy).sqrt();
+                    }
+                    p
+                }
+                RoiShape::Polyline { points } => {
+                    let mut p = 0.0;
+                    for w in points.windows(2) {
+                        let dx = (w[1].x - w[0].x) * calibration.pixel_size_x;
+                        let dy = (w[1].y - w[0].y) * calibration.pixel_size_y;
+                        p += (dx * dx + dy * dy).sqrt();
+                    }
+                    p
+                }
+                _ => metrics.perimeter_px * ((calibration.pixel_size_x + calibration.pixel_size_y) / 2.0),
+            };
 
-        let (cx_phys, cy_phys) = calibration.pixel_to_physical(metrics.centroid.x, metrics.centroid.y);
+            let f_max = metrics.feret_max_px * ((calibration.pixel_size_x + calibration.pixel_size_y) / 2.0);
+            let f_min = metrics.feret_min_px * ((calibration.pixel_size_x + calibration.pixel_size_y) / 2.0);
+            let (cx, cy) = calibration.pixel_to_physical(metrics.centroid.x, metrics.centroid.y);
+
+            (area, perim, f_max, f_min, cx, cy)
+        } else {
+            (metrics.area_px, metrics.perimeter_px, metrics.feret_max_px, metrics.feret_min_px, metrics.centroid.x, metrics.centroid.y)
+        };
 
         RoiMeasurements {
             area_px: metrics.area_px,
@@ -51,7 +92,7 @@ impl MeasurementEngine {
             feret_min_physical: feret_min_phys,
             centroid_x_physical: cx_phys,
             centroid_y_physical: cy_phys,
-            unit_name: calibration.unit_name.clone(),
+            unit_name: if calibration.is_calibrated { calibration.unit_name.clone() } else { "px".to_string() },
             is_calibrated: calibration.is_calibrated,
             mean_intensity: None,
             min_intensity: None,

@@ -80,7 +80,7 @@ pub async fn project_add_image(
     project.add_image(image, dataset_id.as_deref());
     
     if let Some(dir_path) = state.project_dir.lock().unwrap().as_ref() {
-        let _ = project.save_to_directory(dir_path);
+        project.save_to_directory(dir_path)?;
     }
 
     Ok(project.clone())

@@ -118,8 +118,8 @@ fn test_axis_model_strides_and_transposition() {
     assert_eq!(dims.channels, 3);
     assert_eq!(dims.z_slices, 5);
     assert_eq!(dims.time_points, 2);
-    assert_eq!(dims.total_pixels_per_plane(), 200);
-    assert_eq!(dims.total_samples(), 10 * 20 * 3 * 5 * 2);
+    assert_eq!(dims.total_pixels_per_plane().unwrap(), 200);
+    assert_eq!(dims.total_samples().unwrap(), 10 * 20 * 3 * 5 * 2);
 
     let idx = dims.linear_index(4, 7, 2, 3, 1).expect("Valid index");
     let (rx, ry, rc, rz, rt) = dims.coords_from_index(idx);
@@ -142,7 +142,7 @@ fn test_axis_model_strides_and_transposition() {
         time_points: 1,
         axis_order: AxisOrder::CXY,
     };
-    assert_eq!(planar_dims.total_samples(), 32);
+    assert_eq!(planar_dims.total_samples().unwrap(), 32);
 
     // Fill sample buffer where val = channel * 100 + y * 10 + x
     let mut samples = vec![0.0f64; 32];

@@ -123,11 +123,12 @@ pub struct UserStats {
     pub messages_last_24h: usize,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct WebServerConfig {
     pub port: u16,
     pub llama_server_port: u16,
     pub data_dir: PathBuf,
+    pub bind_to_lan: bool,
 }
 
 impl WebServerConfig {
@@ -136,6 +137,7 @@ impl WebServerConfig {
             port: self.port,
             llama_server_port: self.llama_server_port,
             data_dir: self.data_dir.clone(),
+            bind_to_lan: self.bind_to_lan,
         }
     }
 }
@@ -1102,7 +1104,8 @@ pub async fn start_web_server(
         .with_state(Arc::clone(&state))
         .layer(cors);
 
-    let addr = format!("0.0.0.0:{}", config.port);
+    let host = if config.bind_to_lan { "0.0.0.0" } else { "127.0.0.1" };
+    let addr = format!("{}:{}", host, config.port);
     let listener = TcpListener::bind(&addr).await?;
     let actual_port = listener.local_addr()?.port();
 

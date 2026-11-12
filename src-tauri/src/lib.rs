@@ -552,7 +552,7 @@ async fn llm_start_web_server(port: u16, state: tauri::State<'_, LlmAppState>) -
     { let ws = state.web_server.lock().unwrap(); if ws.is_some() { return Err("Already running".to_string()); } }
     let data_dir = dirs::data_dir().ok_or("Cannot find data directory")?.join("tissueai").join("llm");
     let llama_port = { let ss = state.server.lock().unwrap(); match &ss.status { server::ServerStatus::Running { port, .. } => *port, _ => 8081 } };
-    let config = web_server::WebServerConfig { port, llama_server_port: llama_port, data_dir };
+    let config = web_server::WebServerConfig { port, llama_server_port: llama_port, data_dir, bind_to_lan: false };
     let (handle, actual_port, server_state) = web_server::start_web_server(config).await.map_err(|e| e.to_string())?;
     { let mut ws = state.web_server.lock().unwrap(); *ws = Some(LlmWebServerHandle { handle: Some(handle), port: actual_port, state: Some(server_state) }); }
     Ok(actual_port)

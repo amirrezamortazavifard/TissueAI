@@ -162,16 +162,19 @@ impl ImageDimensions {
         }
     }
 
-    pub fn total_pixels_per_plane(&self) -> usize {
-        (self.width as usize) * (self.height as usize)
+    pub fn total_pixels_per_plane(&self) -> Result<usize, String> {
+        (self.width as usize)
+            .checked_mul(self.height as usize)
+            .ok_or_else(|| "Plane dimension overflow".to_string())
     }
 
-    pub fn total_samples(&self) -> usize {
+    pub fn total_samples(&self) -> Result<usize, String> {
         (self.width as usize)
-            * (self.height as usize)
-            * (self.channels as usize)
-            * (self.z_slices as usize)
-            * (self.time_points as usize)
+            .checked_mul(self.height as usize)
+            .and_then(|v| v.checked_mul(self.channels as usize))
+            .and_then(|v| v.checked_mul(self.z_slices as usize))
+            .and_then(|v| v.checked_mul(self.time_points as usize))
+            .ok_or_else(|| "Total samples dimension overflow".to_string())
     }
 
     /// Size of an individual axis
@@ -262,7 +265,7 @@ impl ImageDimensions {
 
     /// Permute source sample buffer from current axis order to canonical XYCZT layout
     pub fn transpose_to_canonical(&self, samples: &[f64]) -> Result<(ImageDimensions, Vec<f64>), String> {
-        let total = self.total_samples();
+        let total = self.total_samples()?;
         if samples.len() != total {
             return Err(format!("Sample length mismatch: expected {}, got {}", total, samples.len()));
         }

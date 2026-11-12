@@ -1,5 +1,5 @@
 /**
- * Central ROI and Measurement definitions matching Rust ROI Engine (options.md Section 5 & 8)
+ * Central ROI and Measurement definitions matching Rust ROI Engine (options.md Section 5 & 8, M4-03, M4-04, M4-05)
  */
 
 export interface Point2D {
@@ -48,7 +48,12 @@ export interface RoiItem {
   color: string;
   group_name: string;
   slide_id: string | null;
+  parent_id?: string | null;
+  class_id?: string | null;
+  class_name?: string | null;
   is_visible: boolean;
+  is_locked?: boolean;
+  tags?: string[];
+  notes?: string | null;
   measurements: RoiMeasurements | null;
 }
-

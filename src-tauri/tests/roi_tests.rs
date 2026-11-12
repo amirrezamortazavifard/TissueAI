@@ -1,6 +1,6 @@
+use tempfile::NamedTempFile;
 use tissueai_lib::roi::{
-    BooleanEngine, BooleanOp, BoundingRect, GeometryEngine, Point2D, RoiItem, RoiManager,
-    RoiShape,
+    BooleanEngine, BoundingRect, GeometryEngine, Point2D, RoiItem, RoiManager, RoiShape,
 };
 use tissueai_lib::scientific_models::scientific_image::SpatialCalibration;
 
@@ -17,7 +17,6 @@ fn test_polygon_shoelace_area_and_perimeter() {
     assert!((area - 50.0).abs() < 1e-6);
 
     let perim = GeometryEngine::polygon_perimeter(&points);
-    // 10 + 10 + sqrt(200) = 20 + 14.1421356 = 34.1421356
     let expected_perim = 20.0 + (200.0f64).sqrt();
     assert!((perim - expected_perim).abs() < 1e-5);
 
@@ -95,7 +94,13 @@ fn test_roi_manager_measurements_and_geojson() {
         color: "#FF1744".to_string(),
         group_name: "Tumor Regions".to_string(),
         slide_id: Some("slide-42".to_string()),
+        parent_id: None,
+        class_id: Some("cls-tumor".to_string()),
+        class_name: Some("Tumor".to_string()),
         is_visible: true,
+        is_locked: false,
+        tags: vec!["malignant".to_string()],
+        notes: Some("High cellularity".to_string()),
         measurements: None,
     };
 
@@ -108,6 +113,7 @@ fn test_roi_manager_measurements_and_geojson() {
     assert_eq!(m.area_px, 160000.0);
     assert!((m.area_physical - 10000.0).abs() < 1e-4);
     assert_eq!(m.unit_name, "µm");
+    assert!(m.is_calibrated);
 
     // Export GeoJSON
     let geojson = manager.export_geojson(Some("slide-42")).unwrap();
@@ -116,3 +122,105 @@ fn test_roi_manager_measurements_and_geojson() {
     assert!(geojson.contains("Polygon"));
 }
 
+#[test]
+fn test_roi_atomic_persistence_and_reopen_verification() {
+    let manager = RoiManager::new();
+    let cal = SpatialCalibration::new_microns(0.5);
+
+    let roi_a = RoiItem {
+        id: "roi-persistent-1".to_string(),
+        name: "Gland Lumen".to_string(),
+        shape: RoiShape::Rectangle {
+            x: 50.0,
+            y: 50.0,
+            width: 200.0,
+            height: 100.0,
+        },
+        color: "#00E5FF".to_string(),
+        group_name: "Glands".to_string(),
+        slide_id: Some("slide-h-and-e".to_string()),
+        parent_id: None,
+        class_id: Some("c-lumen".to_string()),
+        class_name: Some("Lumen".to_string()),
+        is_visible: true,
+        is_locked: false,
+        tags: vec!["histology".to_string()],
+        notes: None,
+        measurements: None,
+    };
+
+    manager.add(roi_a, Some(&cal));
+
+    // Save atomically to temporary file (FIND-004 resolved)
+    let temp_file = NamedTempFile::new().expect("Create temp file");
+    manager
+        .save_to_path(temp_file.path())
+        .expect("Atomic save failed");
+
+    // Reopen in a clean, fresh RoiManager instance
+    let new_manager = RoiManager::new();
+    assert_eq!(new_manager.list(None).len(), 0);
+
+    let loaded_count = new_manager
+        .load_from_path(temp_file.path())
+        .expect("Load from path failed");
+    assert_eq!(loaded_count, 1);
+
+    let loaded_item = new_manager.get("roi-persistent-1").expect("Loaded item");
+    assert_eq!(loaded_item.name, "Gland Lumen");
+    assert_eq!(loaded_item.class_name.as_deref(), Some("Lumen"));
+    assert!(loaded_item.measurements.is_some());
+    // 200 * 100 * 0.25 = 5,000 µm²
+    let m = loaded_item.measurements.unwrap();
+    assert_eq!(m.area_physical, 5000.0);
+    assert_eq!(m.unit_name, "µm");
+}
+
+#[test]
+fn test_roi_undo_redo_stack() {
+    let manager = RoiManager::new();
+    assert!(!manager.can_undo());
+    assert!(!manager.can_redo());
+
+    let item = RoiItem {
+        id: "undo-test-1".to_string(),
+        name: "Test Polygon".to_string(),
+        shape: RoiShape::Rectangle {
+            x: 10.0,
+            y: 10.0,
+            width: 20.0,
+            height: 20.0,
+        },
+        color: "#00FF00".to_string(),
+        group_name: "Default".to_string(),
+        slide_id: None,
+        parent_id: None,
+        class_id: None,
+        class_name: None,
+        is_visible: true,
+        is_locked: false,
+        tags: Vec::new(),
+        notes: None,
+        measurements: None,
+    };
+
+    manager.add(item, None);
+    assert_eq!(manager.list(None).len(), 1);
+    assert!(manager.can_undo());
+
+    // Undo -> removes added item
+    assert!(manager.undo());
+    assert_eq!(manager.list(None).len(), 0);
+    assert!(manager.can_redo());
+
+    // Redo -> restores added item
+    assert!(manager.redo());
+    assert_eq!(manager.list(None).len(), 1);
+    assert!(manager.get("undo-test-1").is_some());
+
+    // Delete item -> undo restores it
+    assert!(manager.delete("undo-test-1"));
+    assert_eq!(manager.list(None).len(), 0);
+    assert!(manager.undo());
+    assert_eq!(manager.list(None).len(), 1);
+}

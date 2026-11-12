@@ -1,6 +1,8 @@
 use crate::roi::{
     BooleanEngine, BooleanOp, RoiItem, RoiManager, RoiMeasurements,
 };
+use crate::scientific_models::scientific_image::SpatialCalibration;
+use std::path::Path;
 use std::sync::Arc;
 use tauri::State;
 
@@ -10,8 +12,12 @@ pub struct RoiState {
 }
 
 #[tauri::command]
-pub fn roi_add(item: RoiItem, state: State<'_, RoiState>) -> Result<RoiItem, String> {
-    Ok(state.manager.add(item, None))
+pub fn roi_add(
+    item: RoiItem,
+    calibration: Option<SpatialCalibration>,
+    state: State<'_, RoiState>,
+) -> Result<RoiItem, String> {
+    Ok(state.manager.add(item, calibration.as_ref()))
 }
 
 #[tauri::command]
@@ -20,10 +26,14 @@ pub fn roi_list(slide_id: Option<String>, state: State<'_, RoiState>) -> Result<
 }
 
 #[tauri::command]
-pub fn roi_update(item: RoiItem, state: State<'_, RoiState>) -> Result<RoiItem, String> {
+pub fn roi_update(
+    item: RoiItem,
+    calibration: Option<SpatialCalibration>,
+    state: State<'_, RoiState>,
+) -> Result<RoiItem, String> {
     state
         .manager
-        .update(item, None)
+        .update(item, calibration.as_ref())
         .ok_or_else(|| "Failed to update ROI item: not found".to_string())
 }
 
@@ -47,6 +57,29 @@ pub fn roi_measure(roi_id: String, state: State<'_, RoiState>) -> Result<RoiMeas
 
     item.measurements
         .ok_or_else(|| "Measurements not computed".to_string())
+}
+
+#[tauri::command]
+pub fn roi_undo(state: State<'_, RoiState>) -> Result<bool, String> {
+    Ok(state.manager.undo())
+}
+
+#[tauri::command]
+pub fn roi_redo(state: State<'_, RoiState>) -> Result<bool, String> {
+    Ok(state.manager.redo())
+}
+
+#[tauri::command]
+pub fn roi_save_to_file(path: String, state: State<'_, RoiState>) -> Result<bool, String> {
+    state
+        .manager
+        .save_to_path(Path::new(&path))
+        .map(|_| true)
+}
+
+#[tauri::command]
+pub fn roi_load_from_file(path: String, state: State<'_, RoiState>) -> Result<usize, String> {
+    state.manager.load_from_path(Path::new(&path))
 }
 
 #[tauri::command]
@@ -80,7 +113,13 @@ pub fn roi_boolean_operation(
         color: "#00E5FF".to_string(),
         group_name: "Boolean Operations".to_string(),
         slide_id: item_a.slide_id.clone(),
+        parent_id: None,
+        class_id: item_a.class_id.clone(),
+        class_name: item_a.class_name.clone(),
         is_visible: true,
+        is_locked: false,
+        tags: vec!["boolean_operation".to_string()],
+        notes: None,
         measurements: None,
     };
 
@@ -94,4 +133,3 @@ pub fn roi_export_geojson(
 ) -> Result<String, String> {
     state.manager.export_geojson(slide_id.as_deref())
 }
-

@@ -5,7 +5,7 @@ use tauri::State;
 use uuid::Uuid;
 
 use crate::scientific_models::scientific_image::{
-    ImageAsset, SpatialCalibration,
+    CalibrationSource, ImageAsset, SpatialCalibration,
 };
 
 #[derive(Default)]
@@ -122,7 +122,9 @@ pub fn sci_image_set_calibration(
         pixel_size_x,
         pixel_size_y,
         pixel_size_z: 1.0,
+        time_interval: None,
         unit_name,
+        source: if is_calibrated { CalibrationSource::UserDefined } else { CalibrationSource::Unknown },
         origin_x: 0.0,
         origin_y: 0.0,
         is_calibrated,

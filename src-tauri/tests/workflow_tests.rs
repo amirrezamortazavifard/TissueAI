@@ -72,3 +72,4 @@ fn test_research_report_generation() {
     assert!(report_md.contains("wsi_open_slide"));
     assert!(report_md.contains("ai_stardist_decode"));
 }
+

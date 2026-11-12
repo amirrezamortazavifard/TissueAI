@@ -38,3 +38,4 @@ export interface SkeletonAnalysisParams {
   height: number;
   pixel_size_um: number;
 }
+

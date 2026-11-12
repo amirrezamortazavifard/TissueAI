@@ -30,3 +30,4 @@ pub fn skel_analyze_graph(params: SkeletonAnalysisParams) -> Result<SkeletonStat
         params.pixel_size_um,
     ))
 }
+

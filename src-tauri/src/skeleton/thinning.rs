@@ -123,3 +123,4 @@ fn count_transitions(p: &[bool; 8]) -> usize {
     }
     count
 }
+

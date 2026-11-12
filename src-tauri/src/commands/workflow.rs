@@ -49,3 +49,4 @@ pub fn workflow_generate_report(
     let pipeline = state.manager.get_pipeline();
     Ok(ResearchReportGenerator::generate_markdown(&input, &pipeline))
 }
+

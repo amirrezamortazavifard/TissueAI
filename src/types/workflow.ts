@@ -23,3 +23,4 @@ export interface PathologyReportInput {
   mean_circularity: number;
   positive_fraction: number;
 }
+

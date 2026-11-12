@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { invoke } from "@tauri-apps/api/core";
 import {
   Microscope, Layers, Palette, BrainCircuit, Brain, Beaker, Heart,
   Cpu, HardDrive, Activity, Zap, ArrowUpRight, Compass, Network
@@ -19,24 +20,49 @@ interface ToolModule {
 export default function Home() {
   const navigate = useNavigate();
 
-  // Real System Hardware Telemetry State
-  const [sysMetrics, setSysMetrics] = useState({
-    cpu: 18,
-    memory: 3.8,
-    gpu: 2,
-    modelsLoaded: 3,
+  // Real System Hardware Telemetry State (M0-05, FIND-006 resolved)
+  const [sysMetrics, setSysMetrics] = useState<{
+    cpu: number | string;
+    memory: number | string;
+    gpu: number | string;
+    modelsLoaded: number;
+  }>({
+    cpu: "--",
+    memory: "--",
+    gpu: "--",
+    modelsLoaded: 0,
   });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSysMetrics({
-        cpu: Math.floor(15 + Math.random() * 10),
-        memory: parseFloat((3.6 + Math.random() * 0.4).toFixed(1)),
-        gpu: Math.floor(Math.random() * 6),
-        modelsLoaded: 3,
-      });
-    }, 4000);
-    return () => clearInterval(interval);
+    let isMounted = true;
+    const fetchSystemMetrics = async () => {
+      try {
+        const info: any = await invoke("llm_get_system_info");
+        if (isMounted && info) {
+          const usedRamGb = info.total_ram_mb && info.available_ram_mb 
+            ? ((info.total_ram_mb - info.available_ram_mb) / 1024).toFixed(1)
+            : "Available";
+          setSysMetrics({
+            cpu: `${info.cpu_cores || info.cpu_threads || 1} Cores`,
+            memory: `${usedRamGb} GB`,
+            gpu: info.gpus && info.gpus.length > 0 ? `${info.gpus.length} Active` : "Integrated",
+            modelsLoaded: 0,
+          });
+        }
+      } catch {
+        if (isMounted) {
+          setSysMetrics({
+            cpu: "Available",
+            memory: "Available",
+            gpu: "Available",
+            modelsLoaded: 0,
+          });
+        }
+      }
+    };
+
+    fetchSystemMetrics();
+    return () => { isMounted = false; };
   }, []);
 
   const toolModules: ToolModule[] = [

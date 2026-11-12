@@ -38,7 +38,7 @@ export default function WsiViewer({
 }: WsiViewerProps) {
   const [zoomLevel, setZoomLevel] = useState<WsiZoomLevel>("40x");
   const [showZoomMenu, setShowZoomMenu] = useState(false);
-  const [mouseCoords, setMouseCoords] = useState<{ x: number; y: number }>({ x: 23458, y: 17892 });
+  const [mouseCoords, setMouseCoords] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   
   // Interactive Pan / Drag State
   const [activeTool, setActiveTool] = useState<"select" | "pan">("pan");
@@ -110,10 +110,13 @@ export default function WsiViewer({
   };
 
   const getScalebarText = (zoom: WsiZoomLevel): string => {
-    const mpp = wsiMeta?.mpp_x || 0.25;
     const mult = getZoomMultiplier(zoom);
-    const microns = Math.round((100 * mpp) / mult);
-    return `${microns} µm`;
+    if (wsiMeta?.is_calibrated && wsiMeta.mpp_x > 0) {
+      const microns = Math.round((100 * wsiMeta.mpp_x) / mult);
+      return `${microns} µm`;
+    }
+    const px = Math.round(100 / mult);
+    return `${px} px (Uncalibrated)`;
   };
 
   const visibleDetections = detections.filter(d => !hiddenClasses.has(d.original_box.class_id));
@@ -301,11 +304,17 @@ export default function WsiViewer({
       const scaleY = layout.displayH / imageSize.h;
       const slideX = Math.max(0, Math.round(clickX / (scaleX || 1)));
       const slideY = Math.max(0, Math.round(clickY / (scaleY || 1)));
-      const mpp = wsiMeta?.mpp_x || 0.25;
-      setMouseCoords({
-        x: Math.round(slideX * mpp),
-        y: Math.round(slideY * mpp),
-      });
+      if (wsiMeta?.is_calibrated && wsiMeta.mpp_x > 0) {
+        setMouseCoords({
+          x: Math.round(slideX * wsiMeta.mpp_x),
+          y: Math.round(slideY * (wsiMeta.mpp_y || wsiMeta.mpp_x)),
+        });
+      } else {
+        setMouseCoords({
+          x: slideX,
+          y: slideY,
+        });
+      }
     }
 
     if (!isPanning) return;
@@ -540,7 +549,7 @@ export default function WsiViewer({
         <div className="aw-wsi-bottombar">
           <div className="aw-wsi-scalebar">{getScalebarText(zoomLevel)}</div>
           <div className="aw-wsi-coords">
-            X: {mouseCoords.x.toLocaleString()} µm &nbsp; Y: {mouseCoords.y.toLocaleString()} µm
+            X: {mouseCoords.x.toLocaleString()} {wsiMeta?.is_calibrated ? "µm" : "px"} &nbsp; Y: {mouseCoords.y.toLocaleString()} {wsiMeta?.is_calibrated ? "µm" : "px"}
             {panOffset.x !== 0 || panOffset.y !== 0 ? ` (Offset: ${panOffset.x}px, ${panOffset.y}px)` : ''}
           </div>
         </div>

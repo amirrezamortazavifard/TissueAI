@@ -85,19 +85,17 @@ export default function AgentWorkspaceMain() {
     const interval = setInterval(async () => {
       try {
         const metrics: any = await invoke("llm_get_server_metrics");
-        setSysMetrics(prev => ({
-          ...prev,
-          cpu: metrics.cpu_usage || Math.random() * 30 + 15,
-          ram: metrics.memory_usage || Math.random() * 35 + 20,
-        }));
-      } catch (e) {
-        setSysMetrics(prev => ({
-          ...prev,
-          cpu: Math.random() * 30 + 15,
-          ram: Math.random() * 35 + 20,
-        }));
+        if (metrics) {
+          setSysMetrics(prev => ({
+            ...prev,
+            cpu: metrics.cpu_usage || 0,
+            ram: metrics.memory_usage || 0,
+          }));
+        }
+      } catch {
+        // Keep actual server state without synthetic fallback
       }
-    }, 2500);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);

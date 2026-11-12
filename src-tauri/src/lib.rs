@@ -6,6 +6,7 @@ pub mod llm;
 pub mod scientific_models;
 pub mod wsi;
 pub mod roi;
+pub mod project;
 pub mod image_processing;
 pub mod ai_segmentation;
 pub mod registration;
@@ -71,6 +72,10 @@ use commands::roi::{
     RoiState, roi_add, roi_list, roi_update, roi_delete, roi_clear,
     roi_measure, roi_boolean_operation, roi_export_geojson,
     roi_undo, roi_redo, roi_save_to_file, roi_load_from_file,
+};
+use commands::project::{
+    ProjectState, project_create, project_open, project_save,
+    project_get_current, project_add_image,
 };
 use commands::image_processing::{
     proc_apply_filter, proc_apply_adjustments, proc_distance_transform,
@@ -920,6 +925,7 @@ pub fn run() {
         .manage(ScientificWorkspaceState::default())
         .manage(WsiState::default())
         .manage(RoiState::default())
+        .manage(ProjectState::default())
         .manage(LlmAppState {
             config: Mutex::new(llm_config),
             server: server::new_server_state(),
@@ -966,6 +972,12 @@ pub fn run() {
             roi_redo,
             roi_save_to_file,
             roi_load_from_file,
+            // Project & Persistence (Phase 4 M4)
+            project_create,
+            project_open,
+            project_save,
+            project_get_current,
+            project_add_image,
             // Image Processing & Scientific Filters (Phase 4)
             proc_apply_filter,
             proc_apply_adjustments,

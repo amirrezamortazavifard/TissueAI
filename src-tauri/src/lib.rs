@@ -79,7 +79,7 @@ use commands::project::{
 };
 use commands::image_processing::{
     proc_apply_filter, proc_apply_adjustments, proc_distance_transform,
-    proc_watershed_segmentation,
+    proc_watershed_segmentation, proc_apply_threshold,
 };
 use commands::ai_segmentation::{
     ai_stardist_decode, ai_wsi_plan_tiles, ai_stardist_to_rois,
@@ -983,6 +983,7 @@ pub fn run() {
             proc_apply_adjustments,
             proc_distance_transform,
             proc_watershed_segmentation,
+            proc_apply_threshold,
             // AI Segmentation & StarDist Polygonal Inference (Phase 5)
             ai_stardist_decode,
             ai_wsi_plan_tiles,

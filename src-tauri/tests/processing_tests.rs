@@ -90,3 +90,26 @@ fn test_gaussian_blur_and_median_noise_removal() {
     assert!(blurred[5 * width + 5] < 200, "Spike should be diffused");
 }
 
+#[test]
+fn test_otsu_and_triangle_thresholding() {
+    use tissueai_lib::image_processing::{Thresholding, ThresholdMethod};
+
+    // Bimodal distribution: 100 pixels at 40 (background), 100 pixels at 200 (foreground)
+    let mut bimodal = vec![40u8; 100];
+    bimodal.extend(vec![200u8; 100]);
+
+    let (mask, cutoff) = Thresholding::apply(&bimodal, ThresholdMethod::Otsu);
+    assert!(cutoff >= 40 && cutoff <= 200);
+    assert_eq!(mask.iter().filter(|&&v| v).count(), 100);
+
+    // Unimodal skewed distribution for Triangle thresholding
+    let mut skewed = vec![20u8; 500];
+    for i in 21..120 {
+        skewed.extend(vec![i as u8; 2]);
+    }
+    let (t_mask, t_cutoff) = Thresholding::apply(&skewed, ThresholdMethod::Triangle);
+    assert!(t_cutoff > 20);
+    assert!(!t_mask.is_empty());
+}
+
+

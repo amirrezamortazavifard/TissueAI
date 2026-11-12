@@ -231,3 +231,85 @@ pub fn proc_watershed_segmentation(
     })
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ThresholdResult {
+    pub threshold_value: u8,
+    pub binary_asset_id: String,
+    pub foreground_count: usize,
+}
+
+#[tauri::command]
+pub fn proc_apply_threshold(
+    asset_id: String,
+    method: String,
+    fixed_value: Option<f64>,
+    state: State<'_, ScientificWorkspaceState>,
+) -> Result<ThresholdResult, String> {
+    let mut assets = state.assets.lock().map_err(|e| e.to_string())?;
+    let parent = assets
+        .get(&asset_id)
+        .ok_or_else(|| format!("Asset '{}' not found", asset_id))?
+        .clone();
+
+    let buffer = parent
+        .buffer
+        .as_ref()
+        .ok_or_else(|| "Parent buffer not loaded".to_string())?;
+
+    let width = parent.dimensions.width as usize;
+    let height = parent.dimensions.height as usize;
+
+    let grayscale_bytes: Vec<u8> = match buffer {
+        TypedPixelBuffer::U8(v) => v.clone(),
+        TypedPixelBuffer::Rgb24(v) => {
+            v.chunks_exact(3)
+                .map(|rgb| (0.299 * rgb[0] as f32 + 0.587 * rgb[1] as f32 + 0.114 * rgb[2] as f32).round() as u8)
+                .collect()
+        }
+        TypedPixelBuffer::Rgba32(v) => {
+            v.chunks_exact(4)
+                .map(|rgba| (0.299 * rgba[0] as f32 + 0.587 * rgba[1] as f32 + 0.114 * rgba[2] as f32).round() as u8)
+                .collect()
+        }
+        _ => return Err("Thresholding requires a U8, RGB, or RGBA buffer".to_string()),
+    };
+
+    let thresh_method = match method.to_lowercase().as_str() {
+        "otsu" => crate::image_processing::ThresholdMethod::Otsu,
+        "triangle" => crate::image_processing::ThresholdMethod::Triangle,
+        "mean" => crate::image_processing::ThresholdMethod::Mean,
+        "fixed" => crate::image_processing::ThresholdMethod::Fixed(fixed_value.unwrap_or(128.0)),
+        _ => return Err(format!("Unknown threshold method: {}", method)),
+    };
+
+    let (mask, cutoff) = crate::image_processing::Thresholding::apply(&grayscale_bytes, thresh_method);
+    let binary_bytes: Vec<u8> = mask.iter().map(|&fg| if fg { 255 } else { 0 }).collect();
+    let foreground_count = mask.iter().filter(|&&fg| fg).count();
+
+    let new_id = Uuid::new_v4().to_string();
+    let new_name = format!("{}_Threshold_{}", parent.asset_name, method);
+
+    let derived = parent.create_derived(
+        new_id.clone(),
+        new_name,
+        TypedPixelBuffer::U8(binary_bytes),
+        PixelType::U8,
+        ColorModel::Grayscale,
+        &format!("THRESHOLD_{}", method.to_uppercase()),
+        serde_json::json!({
+            "cutoff": cutoff,
+            "foreground_pixels": foreground_count,
+            "method": method,
+        }),
+    );
+
+    assets.insert(new_id.clone(), derived);
+
+    Ok(ThresholdResult {
+        threshold_value: cutoff,
+        binary_asset_id: new_id,
+        foreground_count,
+    })
+}
+
+

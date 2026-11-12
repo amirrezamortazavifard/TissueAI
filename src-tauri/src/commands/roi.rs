@@ -60,6 +60,47 @@ pub fn roi_measure(roi_id: String, state: State<'_, RoiState>) -> Result<RoiMeas
 }
 
 #[tauri::command]
+pub fn roi_measure_with_image(
+    roi_id: String,
+    asset_id: String,
+    roi_state: State<'_, RoiState>,
+    sci_state: State<'_, crate::commands::scientific_image::ScientificWorkspaceState>,
+) -> Result<RoiMeasurements, String> {
+    let mut item = roi_state
+        .manager
+        .get(&roi_id)
+        .ok_or_else(|| format!("ROI with ID '{}' not found", roi_id))?;
+
+    let assets = sci_state.assets.lock().map_err(|e| e.to_string())?;
+    let asset = assets.get(&asset_id).ok_or_else(|| format!("Asset '{}' not found", asset_id))?;
+    let buffer = asset.buffer.as_ref().ok_or_else(|| "Asset buffer not loaded".to_string())?;
+
+    let intensity_bytes: Vec<u8> = match buffer {
+        crate::scientific_models::scientific_image::TypedPixelBuffer::U8(v) => v.clone(),
+        crate::scientific_models::scientific_image::TypedPixelBuffer::Rgb24(v) => {
+            v.chunks_exact(3).map(|c| ((c[0] as u16 + c[1] as u16 + c[2] as u16) / 3) as u8).collect()
+        }
+        crate::scientific_models::scientific_image::TypedPixelBuffer::Rgba32(v) => {
+            v.chunks_exact(4).map(|c| ((c[0] as u16 + c[1] as u16 + c[2] as u16) / 3) as u8).collect()
+        }
+        _ => return Err("Only U8/RGB/RGBA supported for intensity measurements".to_string()),
+    };
+
+    let measurements = crate::roi::measurement::MeasurementEngine::measure_with_intensity(
+        &item.shape,
+        &asset.calibration,
+        Some(&intensity_bytes),
+        asset.dimensions.width as usize,
+        asset.dimensions.height as usize,
+    );
+
+    item.measurements = Some(measurements.clone());
+    roi_state.manager.update(item, Some(&asset.calibration));
+
+    Ok(measurements)
+}
+
+#[tauri::command]
 pub fn roi_undo(state: State<'_, RoiState>) -> Result<bool, String> {
     Ok(state.manager.undo())
 }

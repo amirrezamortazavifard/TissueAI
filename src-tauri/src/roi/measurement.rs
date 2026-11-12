@@ -31,6 +31,16 @@ impl MeasurementEngine {
         shape: &RoiShape,
         calibration: &SpatialCalibration,
     ) -> RoiMeasurements {
+        Self::measure_with_intensity(shape, calibration, None, 0, 0)
+    }
+
+    pub fn measure_with_intensity(
+        shape: &RoiShape,
+        calibration: &SpatialCalibration,
+        intensity_buffer: Option<&[u8]>,
+        image_width: usize,
+        image_height: usize,
+    ) -> RoiMeasurements {
         let metrics = GeometryEngine::compute_shape_metrics(shape);
 
         // If uncalibrated, physical values remain 0 / uncalibrated
@@ -81,6 +91,41 @@ impl MeasurementEngine {
             (metrics.area_px, metrics.perimeter_px, metrics.feret_max_px, metrics.feret_min_px, metrics.centroid.x, metrics.centroid.y)
         };
 
+        // Compute actual intensity statistics within bounding box if buffer provided
+        let (mean_int, min_int, max_int, std_int) = if let Some(buf) = intensity_buffer {
+            if image_width > 0 && image_height > 0 && buf.len() >= image_width * image_height {
+                let bbox = &metrics.bounding_box;
+                let min_x = (bbox.x.floor().max(0.0) as usize).min(image_width);
+                let max_x = ((bbox.x + bbox.width).ceil().max(0.0) as usize).min(image_width);
+                let min_y = (bbox.y.floor().max(0.0) as usize).min(image_height);
+                let max_y = ((bbox.y + bbox.height).ceil().max(0.0) as usize).min(image_height);
+
+                let mut vals = Vec::new();
+                for y in min_y..max_y {
+                    for x in min_x..max_x {
+                        let idx = y * image_width + x;
+                        vals.push(buf[idx] as f64);
+                    }
+                }
+
+                if !vals.is_empty() {
+                    let count = vals.len() as f64;
+                    let sum: f64 = vals.iter().sum();
+                    let mean = sum / count;
+                    let min_v = vals.iter().copied().fold(f64::INFINITY, f64::min);
+                    let max_v = vals.iter().copied().fold(f64::NEG_INFINITY, f64::max);
+                    let var: f64 = vals.iter().map(|&v| (v - mean) * (v - mean)).sum::<f64>() / count;
+                    (Some(mean), Some(min_v), Some(max_v), Some(var.sqrt()))
+                } else {
+                    (None, None, None, None)
+                }
+            } else {
+                (None, None, None, None)
+            }
+        } else {
+            (None, None, None, None)
+        };
+
         RoiMeasurements {
             area_px: metrics.area_px,
             area_physical: area_phys,
@@ -94,10 +139,10 @@ impl MeasurementEngine {
             centroid_y_physical: cy_phys,
             unit_name: if calibration.is_calibrated { calibration.unit_name.clone() } else { "px".to_string() },
             is_calibrated: calibration.is_calibrated,
-            mean_intensity: None,
-            min_intensity: None,
-            max_intensity: None,
-            std_dev_intensity: None,
+            mean_intensity: mean_int,
+            min_intensity: min_int,
+            max_intensity: max_int,
+            std_dev_intensity: std_int,
         }
     }
 }

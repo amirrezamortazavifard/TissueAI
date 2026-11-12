@@ -6,12 +6,14 @@ use crate::tools::detection::bounding_box::{BoundingBox, ImageDetectionResult, D
 pub struct DetectionState {
     #[allow(dead_code)]
     pub cached_model_path: Mutex<Option<String>>,
+    pub last_detection_results: Mutex<Vec<DetectionInfo>>,
 }
 
 impl DetectionState {
     pub fn new() -> Self {
         DetectionState {
             cached_model_path: Mutex::new(None),
+            last_detection_results: Mutex::new(Vec::new()),
         }
     }
 }
@@ -56,12 +58,26 @@ pub fn run_detection(
     model_path: String,
     confidence_threshold: f32,
     nms_threshold: f32,
+    state: tauri::State<'_, DetectionState>,
 ) -> Result<ImageDetectionResult, String> {
     let mut model = crate::tools::detection::yolo_model::YoloModel::from_file(&model_path)
         .map_err(|e| format!("Failed to create model: {}", e))?;
 
     let result = model.detect_objects(&image_path, confidence_threshold, nms_threshold)
         .map_err(|e| format!("Detection failed: {}", e))?;
+
+    let mut stored = state.last_detection_results.lock().unwrap();
+    *stored = result
+        .detections
+        .iter()
+        .enumerate()
+        .map(|(idx, b)| DetectionInfo {
+            index: idx,
+            label: b.class_name.clone(),
+            confidence: b.confidence,
+            original_box: b.clone(),
+        })
+        .collect();
 
     Ok(result)
 }
@@ -199,8 +215,8 @@ pub fn draw_bounding_boxes(
 }
 
 #[tauri::command]
-pub fn get_detection_results() -> Result<Vec<DetectionInfo>, String> {
-    Ok(Vec::new())
+pub fn get_detection_results(state: tauri::State<'_, DetectionState>) -> Result<Vec<DetectionInfo>, String> {
+    Ok(state.last_detection_results.lock().unwrap().clone())
 }
 
 #[tauri::command]

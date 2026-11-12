@@ -11,6 +11,7 @@ pub mod wsi;
 pub mod roi;
 pub mod project;
 pub mod histology;
+pub mod jobs;
 pub mod image_processing;
 pub mod ai_segmentation;
 pub mod registration;

@@ -8,6 +8,7 @@ pub mod wsi;
 pub mod roi;
 pub mod project;
 pub mod histology;
+pub mod jobs;
 pub mod image_processing;
 pub mod ai_segmentation;
 pub mod registration;
@@ -80,6 +81,9 @@ use commands::project::{
 };
 use commands::histology::{
     histo_detect_tissue, histo_deconvolve, histo_extract_morphometry,
+};
+use commands::jobs::{
+    JobManagerState, job_list, job_get, job_cancel,
 };
 use commands::image_processing::{
     proc_apply_filter, proc_apply_adjustments, proc_distance_transform,
@@ -930,6 +934,7 @@ pub fn run() {
         .manage(WsiState::default())
         .manage(RoiState::default())
         .manage(ProjectState::default())
+        .manage(JobManagerState::default())
         .manage(LlmAppState {
             config: Mutex::new(llm_config),
             server: server::new_server_state(),
@@ -986,6 +991,10 @@ pub fn run() {
             histo_detect_tissue,
             histo_deconvolve,
             histo_extract_morphometry,
+            // Job Engine & Background Processing (Phase 8 M8)
+            job_list,
+            job_get,
+            job_cancel,
             // Image Processing & Scientific Filters (Phase 4)
             proc_apply_filter,
             proc_apply_adjustments,

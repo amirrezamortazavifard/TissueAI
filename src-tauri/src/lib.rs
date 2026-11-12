@@ -9,6 +9,7 @@ pub mod roi;
 pub mod project;
 pub mod histology;
 pub mod jobs;
+pub mod export;
 pub mod image_processing;
 pub mod ai_segmentation;
 pub mod registration;
@@ -84,6 +85,9 @@ use commands::histology::{
 };
 use commands::jobs::{
     JobManagerState, job_list, job_get, job_cancel,
+};
+use commands::export::{
+    export_rois_ome_xml, export_rois_csv,
 };
 use commands::image_processing::{
     proc_apply_filter, proc_apply_adjustments, proc_distance_transform,
@@ -995,6 +999,9 @@ pub fn run() {
             job_list,
             job_get,
             job_cancel,
+            // Export & Scientific Interoperability (Phase 9 M9)
+            export_rois_ome_xml,
+            export_rois_csv,
             // Image Processing & Scientific Filters (Phase 4)
             proc_apply_filter,
             proc_apply_adjustments,
